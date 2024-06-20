@@ -4,11 +4,7 @@ using namespace std;
 #include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/calculate.h"
 #include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/calculate.cpp"
 
-/*
-static TEST(TestCaseName, TestName) {
-  EXPECT_EQ(1, 1);
-  EXPECT_TRUE(true);
-}*/
+
 
 
 TEST(validateInputTest, validInput)
