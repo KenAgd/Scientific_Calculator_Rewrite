@@ -1,9 +1,4 @@
-/*
-Tokenize
-	-if input such as .5 detected, add a 0 to the left
-	-if ~~ detected, convert to positive number.
 
-*/
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -27,7 +22,7 @@ bool isOperator(char Token)
 
 // Function to check if a string is a valid function
 bool isFunction(const string& str) {
-	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
+	static const unordered_set<string> functions = { "sin()", "cos()", "tan()", "log()", "ln()", "sqrt()", "abs()" };
 
 	if (functions.find(str) != functions.end()) {
 		return true;
@@ -43,69 +38,75 @@ bool isFunction(const string& str) {
 
 */
 // Function to validate user input
-bool validateInput(const string& input)
-{
+//do not to input manipulation in this function, this is only for validation. Any input manipulation should be done in the tokenize function
+//% requires an integer in both operands
+
+/*
+@purpose:
+	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
+
+@param:
+	-string &input: User equation input.
+
+@return:
+	-Returns true if equation is valid, prints error message and returns false if equation is invalid.
+
+@notes:
+	-
+*/
+bool validateInput(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
-	bool expectOperator = false;   // Flag to track if we expect an operator next
-	bool allowUnary = true;        // Flag to allow unary minus
-	bool hasDecimal = false;       // Flag to track if a decimal point has been seen
-	string Token;
-	size_t i = 0;                  // Index for iterating through the input string
+	bool expectOperator = false;
+	bool allowUnary = true;
+	bool hasDecimal = false;
+	size_t i = 0;
 
-
-
-
-	if (input.empty())//Empty input check.
+	if (input.empty()) 
 	{
 		cout << "Error: Empty input. Please try again." << endl;
 		return false;
 	}
 
-
-
-	if (input.length() == 1 && isOperator(input[0]))//Single operator check.
+	if (input.length() == 1 && isOperator(input[0])) 
 	{
 		cout << "Error: Single operator detected. Please try again." << endl;
 		return false;
 	}
 
-
-
-	while (i < input.length())
+	while (i < input.length()) 
 	{
 		char ch = input[i];
 
-		if (isspace(ch))//Whitespace check.
+		if (isspace(ch)) 
 		{
 			cout << "Error: Whitespace detected. Please try again." << endl;
 			return false;
 		}
 
-
-
-		// Handle numbers, operators, and parentheses
-		if (isdigit(ch) || ch == '.')
+	// Handle numbers, operators, and parentheses. In this context, ch is the current character and input[i] is the next character.
+		if (isdigit(ch) || ch == '.') 
 		{
 			hasDecimal = false;
-			if (ch == '.')//Used for detecting multiple decimal points. Same as hasDecimal = (ch == '.');
+			
+			if (ch == '.') 
 			{
 				hasDecimal = true;
 			}
 			i++;
-			
-			if (ch == '.' && (i >= input.length() || !isdigit(input[i]))) 
+
+			if (ch == '.' && (i >= input.length() || !isdigit(input[i])))//Ensures that a decimal is followed by a number.
 			{
 				cout << "Error: Invalid decimal usage." << endl;
-				return false; 
+				return false;
 			}
 
-			while (i < input.length() && (isdigit(input[i]) || input[i] == '.')) 
+			while (i < input.length() && (isdigit(input[i]) || input[i] == '.'))//Prevent multiple decimals.
 			{
 				if (input[i] == '.') 
 				{
 					if (hasDecimal) 
 					{
-						std::cout << "Error: Multiple decimal points detected. Please try again." << std::endl;
+						cout << "Error: Multiple decimal points detected. Please try again." << endl;
 						return false;
 					}
 					hasDecimal = true;
@@ -117,50 +118,51 @@ bool validateInput(const string& input)
 			allowUnary = false;
 		}
 
-
-
-
 		// Handle operators
-		else if (isOperator(ch))
+		else if (isOperator(ch)) 
 		{
-			if (ch == '-' && allowUnary)// Unary minus is allowed, proceed to the next character
+			if (ch == '-' && allowUnary) 
 			{
 				i++;
 				continue;
 			}
 
-			if (!expectOperator)//error print if non operator (minus unary minus) is detected.
+			if (expectOperator == false) 
 			{
 				cout << "Error: Operator detected at the beginning of the expression (except unary minus). Please try again." << endl;
 				return false;
 			}
 
-			if (ch == '/' && i + 1 < input.length() && input[i + 1] == '0')//Division by zero check.
+			if (ch == '/' && i + 1 < input.length() && input[i + 1] == '0') 
 			{
 				cout << "Error: Division by zero detected. Please try again." << endl;
 				return false;
 			}
 
-			if (isOperator(input.back()))
+			if (isOperator(input.back()) || input.back() == '.') 
 			{
 				cout << "Error: Operator detected at the end of the expression. Please try again." << endl;
 				return false;
 			}
 
-			if (ch == '%') {
-				// Ensure '%' is followed by a digit and is not preceded by a decimal point
-				if (i > 0 && input[i - 1] == '.') return false; // Prevent '5.%2'
-				if (i + 1 < input.length() && !isdigit(input[i + 1])) return false; // Ensure valid usage of %
+			if (ch == '%') 
+			{
+			//Checks that % has an integer in both operands.
+				if (i == 0 || (!isdigit(input[i - 1]) && input[i - 1] != ')')
+					|| (i + 1 >= input.length()
+						|| (!isdigit(input[i + 1]) && input[i + 1] != '('))) 
+				{
+					cout << "Error: Invalid use of modulus operator." << endl;
+					return false;
+				}
 			}
-
-
 
 			expectOperator = false;
 			allowUnary = true; // After an operator, unary is allowed
 			i++;
 		}
 
-		else if (ch == '(')
+		else if (ch == '(') 
 		{
 			Parentheses.push(ch);
 			expectOperator = false; // After '(', we do not expect an operator but allow unary.
@@ -168,9 +170,9 @@ bool validateInput(const string& input)
 			i++;
 		}
 
-		else if (ch == ')')
+		else if (ch == ')') 
 		{
-			if (Parentheses.empty() || !expectOperator)
+			if (Parentheses.empty() || !expectOperator) 
 			{
 				cout << "Error: Unbalanced parentheses. Please try again." << endl;
 				return false; // Invalid if no matching '(' or unexpected ')'
@@ -182,52 +184,30 @@ bool validateInput(const string& input)
 			i++;
 		}
 
-
-		//Handle trig functions.
-		else if (isalpha(ch))
-		{
-			//Read trig function name.
-			while (i < input.length() && isalpha(input[i]))
-			{
-				Token += input[i];
-				i++;
-			}
-
-			if (isFunction(Token))
-			{
-				// If it's a recognized function, it must be followed by '('
-				if (i >= input.length() || input[i] != '(')
-				{
-					cout << "Error: Invalid use of trig function. Please try again." << endl;
-					return false;
-				}
-
-				Parentheses.push('(');
-				i++;
-				expectOperator = false; // After a function, we do not expect an operator but allow unary
-				allowUnary = true;
-			}
-
-			else
-			{
-				cout << "Error: Invalid trig function. Please try again." << endl;
-				return false; // Invalid token
-			}
-		}
-
-		else
+		else 
 		{
 			cout << "Error: Invalid character. Please try again." << endl;
 			return false;
 		}
 	}
 
-
-	if (!Parentheses.empty()) //Check for unmatched left parentheses
+	if (!Parentheses.empty()) 
 	{
 		cout << "Error: Unbalanced parentheses. Please try again." << endl;
 		return false;
 	}
+
 	// Input is valid if all parentheses are balanced and we end expecting an operator
 	return true;
 }
+
+/*
+Tokenize
+	-if input such as .5 detected, add a 0 to the left
+	-if -- or -(-num)) detected, convert to positive number.
+
+
+stack<string> Tokenize(const string& input)
+{
+
+}*/

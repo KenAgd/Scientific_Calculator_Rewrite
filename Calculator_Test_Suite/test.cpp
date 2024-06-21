@@ -50,8 +50,33 @@ TEST(validateInputTest, validInput)
     validInput = "2*(3+(4-5))";
     EXPECT_TRUE(validateInput(validInput));
 
-    validInput = "2*(3+(-5))";
+    validInput = "5%2";
     EXPECT_TRUE(validateInput(validInput));
+
+    validInput = "12%5+1";
+    EXPECT_TRUE(validateInput(validInput));
+
+    validInput = "10%3-1";
+    EXPECT_TRUE(validateInput(validInput));
+
+    validInput = "3+4%2";
+    EXPECT_TRUE(validateInput(validInput));
+
+    validInput = "2^2%10";
+    EXPECT_TRUE(validateInput(validInput));
+
+    validInput = "(2+3)%2";
+    EXPECT_TRUE(validateInput(validInput));
+
+    EXPECT_TRUE(validateInput("-5+3"));        // Valid expression with unary minus
+    EXPECT_TRUE(validateInput("2*(-4)"));      // Valid expression with unary minus in parentheses
+    EXPECT_TRUE(validateInput("-(-2)"));         // Valid nested unary minus
+    EXPECT_TRUE(validateInput("-(3+4)"));      // Valid unary minus before parentheses
+    EXPECT_TRUE(validateInput("5+-7"));        // Valid expression with space-separated unary minus
+    EXPECT_TRUE(validateInput("2*-(-4)"));     // Valid nested unary minus with space-separated operator
+
+
+
 }
 
 
@@ -154,6 +179,40 @@ TEST(ValidateInputTest, invalidInput) {
 
     invalidInput = "2*(3+())";
     EXPECT_FALSE(validateInput(invalidInput));
+
+	invalidInput = "5.%2";
+	EXPECT_FALSE(validateInput(invalidInput));
+
+	invalidInput = "5%2.";
+	EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "%5";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "5%";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "5.%2";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "12+%5";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "5%a";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "5%%2";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    invalidInput = "5%+2";
+    EXPECT_FALSE(validateInput(invalidInput));
+
+    EXPECT_FALSE(validateInput("2+-"));        // Unary minus without operand
+    EXPECT_FALSE(validateInput("2*-*3"));    // Invalid sequence of operators with unary minus
+
+
+
+
 }
 
 int main(int argc, char** argv) {
