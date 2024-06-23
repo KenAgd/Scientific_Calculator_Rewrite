@@ -7,6 +7,21 @@
 #include "calculate.h"
 using namespace std;
 
+
+void testPrint(stack<string> Stack)
+{
+	while (!Stack.empty())
+	{
+		cout << Stack.top() << " ";
+		Stack.pop();
+	}
+	cout << endl;
+}
+
+
+
+
+
 bool isOperator(char Token)
 {
 	if (Token == '+' || Token == '-' || Token == '*' || Token == '/' || Token == '^' || Token == '%')
@@ -31,16 +46,6 @@ bool isFunction(const string& str) {
 		return false;
 	}
 }
-
-
-/*
-
-
-*/
-// Function to validate user input
-//do not to input manipulation in this function, this is only for validation. Any input manipulation should be done in the tokenize function
-//% requires an integer in both operands
-
 /*
 @purpose:
 	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
@@ -61,34 +66,34 @@ bool validateInput(const string& input) {
 	bool hasDecimal = false;
 	size_t i = 0;
 
-	if (input.empty()) 
+	if (input.empty())
 	{
 		cout << "Error: Empty input. Please try again." << endl;
 		return false;
 	}
 
-	if (input.length() == 1 && isOperator(input[0])) 
+	if (input.length() == 1 && isOperator(input[0]))
 	{
 		cout << "Error: Single operator detected. Please try again." << endl;
 		return false;
 	}
 
-	while (i < input.length()) 
+	while (i < input.length())
 	{
 		char ch = input[i];
 
-		if (isspace(ch)) 
+		if (isspace(ch))
 		{
 			cout << "Error: Whitespace detected. Please try again." << endl;
 			return false;
 		}
 
-	// Handle numbers, operators, and parentheses. In this context, ch is the current character and input[i] is the next character.
-		if (isdigit(ch) || ch == '.') 
+		// Handle numbers, operators, and parentheses. In this context, ch is the current character and input[i] is the next character.
+		if (isdigit(ch) || ch == '.')
 		{
 			hasDecimal = false;
-			
-			if (ch == '.') 
+
+			if (ch == '.')
 			{
 				hasDecimal = true;
 			}
@@ -102,9 +107,9 @@ bool validateInput(const string& input) {
 
 			while (i < input.length() && (isdigit(input[i]) || input[i] == '.'))//Prevent multiple decimals.
 			{
-				if (input[i] == '.') 
+				if (input[i] == '.')
 				{
-					if (hasDecimal) 
+					if (hasDecimal)
 					{
 						cout << "Error: Multiple decimal points detected. Please try again." << endl;
 						return false;
@@ -119,38 +124,38 @@ bool validateInput(const string& input) {
 		}
 
 		// Handle operators
-		else if (isOperator(ch)) 
+		else if (isOperator(ch))
 		{
-			if (ch == '-' && allowUnary) 
+			if (ch == '-' && allowUnary)
 			{
 				i++;
 				continue;
 			}
 
-			if (expectOperator == false) 
+			if (expectOperator == false)
 			{
 				cout << "Error: Operator detected at the beginning of the expression (except unary minus). Please try again." << endl;
 				return false;
 			}
 
-			if (ch == '/' && i + 1 < input.length() && input[i + 1] == '0') 
+			if (ch == '/' && i + 1 < input.length() && input[i + 1] == '0')
 			{
 				cout << "Error: Division by zero detected. Please try again." << endl;
 				return false;
 			}
 
-			if (isOperator(input.back()) || input.back() == '.') 
+			if (isOperator(input.back()) || input.back() == '.')
 			{
 				cout << "Error: Operator detected at the end of the expression. Please try again." << endl;
 				return false;
 			}
 
-			if (ch == '%') 
+			if (ch == '%')
 			{
-			//Checks that % has an integer in both operands.
+				//Checks that % has an integer in both operands.
 				if (i == 0 || (!isdigit(input[i - 1]) && input[i - 1] != ')')
 					|| (i + 1 >= input.length()
-						|| (!isdigit(input[i + 1]) && input[i + 1] != '('))) 
+						|| (!isdigit(input[i + 1]) && input[i + 1] != '(')))
 				{
 					cout << "Error: Invalid use of modulus operator." << endl;
 					return false;
@@ -162,7 +167,7 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
-		else if (ch == '(') 
+		else if (ch == '(')
 		{
 			Parentheses.push(ch);
 			expectOperator = false; // After '(', we do not expect an operator but allow unary.
@@ -170,9 +175,9 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
-		else if (ch == ')') 
+		else if (ch == ')')
 		{
-			if (Parentheses.empty() || !expectOperator) 
+			if (Parentheses.empty() || !expectOperator)
 			{
 				cout << "Error: Unbalanced parentheses. Please try again." << endl;
 				return false; // Invalid if no matching '(' or unexpected ')'
@@ -184,14 +189,14 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
-		else 
+		else
 		{
 			cout << "Error: Invalid character. Please try again." << endl;
 			return false;
 		}
 	}
 
-	if (!Parentheses.empty()) 
+	if (!Parentheses.empty())
 	{
 		cout << "Error: Unbalanced parentheses. Please try again." << endl;
 		return false;
@@ -202,12 +207,151 @@ bool validateInput(const string& input) {
 }
 
 /*
-Tokenize
-	-if input such as .5 detected, add a 0 to the left
-	-if -- or -(-num)) detected, convert to positive number.
+@purpose:
+	-Reverse the stack passed into it. This is used in Shunting Yard and Tokenize function because after each function call, the equation within the stacks is in reverse order.
 
+@param:
+	-stack<string> tokenStack: Stack that will be reversed.
 
-stack<string> Tokenize(const string& input)
+@return:
+	-Return reversed stack.
+
+@notes:
+	-This was created since stack reversing was used in more than one function. Cleans up Shunting Yard and Tokenize functions.
+*/
+stack<string> ReverseStack(stack<string> tokenStack)
 {
+	stack<string> reverseStack;
+	while (!tokenStack.empty())
+	{
+		reverseStack.push(tokenStack.top());
+		tokenStack.pop();
+	}
 
-}*/
+	return reverseStack;
+}
+
+
+
+/*
+@purpose:
+	-Tokenize user inputted equation.
+
+@param:
+	-string& Equation: User inputted equation that will be tokenized.
+
+@return:
+	-Return stack of tokenized equation.
+
+@notes:
+	-Tokenization is useful for breaking down strings of text into invidual components (tokens) as opposed to individual characters.
+		-EX: "Hello, World!" -> ["Hello", ",", "World", "!"]
+	-size_t used for i counter variable. Its apparently good practice to use size_t instead of int for counters.
+
+@example:
+	-(3+4) -> ["-", "(", "3", "+", "4", ")"]
+	-.5+1 -> ["-0.5", "+", "1"]
+*/
+stack<string>Tokenize(const string& Equation)
+{
+	stack<string>tokenStack;
+	string Token;
+	size_t i = 0;
+	bool hasDecimal = false;
+
+	while (i < Equation.length())
+	{
+		//check for decimal point and operand. 
+		if (isdigit(Equation[i]) || Equation[i] == '.')
+		{
+			Token.clear();
+
+			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
+			{
+				Token += '0';
+			}
+
+			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
+			//EX: 12.345, parse 345 and add it to 12. to form the full 12.345
+				//IF SOMETHING GOES WRONG IN TESTING P2, LOOK HERE FIRST.
+			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+			{
+				Token += Equation[i];
+				i++;
+			}
+
+			tokenStack.push(Token);
+		}
+
+		//Handles determining the context of "-" and checking if its unary or subtraction.
+		else if (Equation[i] == '-') {
+			// Check to see if '-' is at the start or follows an open parenthesis or another operator
+			if (i == 0 || Equation[i - 1] == '(' || Equation[i - 1] == '+' || Equation[i - 1] == '-' || Equation[i - 1] == '*' || Equation[i - 1] == '/' || Equation[i - 1] == '^' || Equation[i - 1] == '%')
+			{
+				Token = "-";
+				i++;
+
+				// If the next character is a digit or a decimal point, it is a negative number. Push '-' and the rest of the number to the stack
+				if (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+				{
+					hasDecimal = false;
+
+					//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+					if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
+					{
+						Token += '0';
+					}
+
+					while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+					{
+						if (Equation[i] == '.' && hasDecimal)
+						{
+							break;
+						}
+
+						if (Equation[i] == '.')
+						{
+							hasDecimal = true;
+						}
+
+						Token += Equation[i];
+						i++;
+					}
+
+					tokenStack.push(Token);
+				}
+
+				// If the next character is '(', it's a unary operator for an expression
+				else if (i < Equation.length() && Equation[i] == '(')
+				{
+					tokenStack.push("-");
+					tokenStack.push("(");
+					i++;
+				}
+			}
+
+			else
+			{
+				// Otherwise, it is subtraction. Push only '-' to the stack
+				tokenStack.push(std::string(1, Equation[i]));
+				i++;
+			}
+		}
+
+		//if current character is an operator or parenthesis, add them to the Token Stack.
+		else if (Equation[i] == '+' || Equation[i] == '-' || Equation[i] == '*' || Equation[i] == '/' || Equation[i] == '%' || Equation[i] == '^' || Equation[i] == '(' || Equation[i] == ')')
+		{
+			tokenStack.push(string(1, Equation[i]));
+			i++;
+		}
+
+		//skip whitespace.
+		else i++;
+	}
+
+	//Final post fix equation is currently reversed, reverse it and return it.
+	return ReverseStack(tokenStack);
+}
+
+

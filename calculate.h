@@ -12,8 +12,9 @@ using namespace std;
 bool isOperator(char Token);
 bool isFunction(const string& str);
 bool validateInput(const string& input);
-
-stack<string>Tokenize(const string& sEquation);
+stack<string> ReverseStack(stack<string> tokenStack);
+void testPrint(stack<string> Stack);
+stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
 double Calculator(stack<string> PostFixStack);
 

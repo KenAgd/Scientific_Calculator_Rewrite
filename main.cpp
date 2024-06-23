@@ -7,8 +7,6 @@
 using namespace std;
 
 
-
-
 bool Restart()
 {
 	string Continue;
@@ -36,8 +34,6 @@ bool Restart()
 
 
 
-//create test cases function here
-
 
 int main()
 {
@@ -45,7 +41,7 @@ int main()
 	stack<string>tokenizedStack;
 	stack<string>postFixStack;
 	double Result = 0.0;
-	//bool Continue = true;
+	
 
 	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << endl;
 	while (true)
@@ -57,7 +53,8 @@ int main()
 
 		else
 		{
-			cout << Equation << endl;
+			tokenizedStack = Tokenize(Equation);
+			testPrint(tokenizedStack);
 		}
 
 
