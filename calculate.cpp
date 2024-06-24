@@ -7,21 +7,43 @@
 #include "calculate.h"
 using namespace std;
 
+/*
+@purpose:
+	-Prints the stack passed into it.
+@param:
+	-stack<string> Stack: The stack to be printed. 
 
+@return:
+	-None. 
+
+@notes:
+	-The stack has already been reversed so it just needs to be printed.
+*/
 void testPrint(stack<string> Stack)
 {
 	while (!Stack.empty())
 	{
-		cout << Stack.top() << " ";
+		cout << '"' << Stack.top() << '"' << ',' << " ";
 		Stack.pop();
 	}
 	cout << endl;
 }
 
 
+/*
+@purpose:
+	-Checks if a character is an operator.
 
+@param:
+	-char Token: Character to be checked.
 
+@return:
+	-Returns true if the character is an operator.
+	-Returns false if the character is not an operator.
 
+@notes:
+	-
+*/
 bool isOperator(char Token)
 {
 	if (Token == '+' || Token == '-' || Token == '*' || Token == '/' || Token == '^' || Token == '%')
@@ -35,7 +57,20 @@ bool isOperator(char Token)
 }
 
 
-// Function to check if a string is a valid function
+/*
+@purpose:
+	-Checks if a Token is a trig function.
+
+@param:
+	-string str: Token to be checked.
+
+@return:
+	-Returns true if the token is a trig function.
+	-Returns false if the token is not a trig function.
+
+@notes:
+	-
+*/
 bool isFunction(const string& str) {
 	static const unordered_set<string> functions = { "sin()", "cos()", "tan()", "log()", "ln()", "sqrt()", "abs()" };
 
@@ -46,6 +81,9 @@ bool isFunction(const string& str) {
 		return false;
 	}
 }
+
+
+
 /*
 @purpose:
 	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
