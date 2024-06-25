@@ -43,9 +43,6 @@
 				less indentation than the code.
 			-One comment can be used to describe multiple lines of code IF the multiple lines of code all work towards achieving one goal.
 */
-
-
-
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -54,7 +51,19 @@
 #include "Calculate.h"
 using namespace std;
 
+/*
+@purpose:
+	-Asks the userif they'd like to perform another calculation.
 
+@param:
+	-None.
+
+@return:
+	-Returns true if user wants to continue, false if they don't.
+
+@notes:
+	-This was separated from main function to thin out the main function.
+*/
 bool Restart()
 {
 	string Continue;
