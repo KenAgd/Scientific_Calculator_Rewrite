@@ -214,13 +214,24 @@ TEST(shuntingYardTest, validInput)
 
 
 
-
+/*
+Format: EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("equation"))), answer);
+        EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize(""))), );
+*/
 TEST(evaluateEquationTest, validInput)
 {
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2"))), 3.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2+3"))), 6.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2*3"))), 7.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1*2+3"))), 5.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6"))), 11.167);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9"))), 135.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2"))), 13.7);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7"))), 1.714);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)"))), -7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7"))), -4.214);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42"))), 42.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2"))), 1.5);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6"))), 19.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))"))), 4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))"))), -4);
 }
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

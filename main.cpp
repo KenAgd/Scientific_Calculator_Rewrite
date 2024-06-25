@@ -52,11 +52,13 @@ int main()
 	double Result = 0.0;
 	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << "If you want to exit, type 'exit' or 'quit'." << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
 		getline(cin, Equation);
+
+		if (Equation == "exit" || Equation == "quit" || Equation == "Exit" || Equation == "Quit") break;
 
 		if (!validateInput(Equation)) continue;
 
@@ -67,7 +69,6 @@ int main()
 
 			Result = evaluateEquation(postFixStack);
 			cout << "Result: " << Result << endl;
-			//testPrint(postFixStack);
 		}
 
 

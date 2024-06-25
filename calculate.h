@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <unordered_set>
+#include <cmath>
 using namespace std;
 
 bool isOperator(char Token);

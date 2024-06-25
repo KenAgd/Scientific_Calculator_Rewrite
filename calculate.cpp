@@ -585,5 +585,7 @@ double evaluateEquation(stack<string> postFixStack)
 		}
 	}
 
-	return evalStack.top();
+	Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
+
+	return Result;
 }
