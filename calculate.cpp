@@ -393,3 +393,197 @@ stack<string>Tokenize(const string& Equation)
 }
 
 
+
+/*
+@purpose:
+	-Check precedence of an operator.
+
+@param:
+	-string& Token: Operator of precedence to be checked.
+
+@return:
+	-Returns int value according to precedence of operator.
+
+@notes:
+	- +, -, *, /, and % all have left associativity, which means they are evaluated from left to right. Only ^ has right associativity.
+*/
+int Precedence(const string& Token)
+{
+	if (Token == "+" || Token == "-") return 1;
+
+	else if (Token == "*" || Token == "/" || Token == "%") return 2;
+
+	else if (Token == "^") return 3;
+
+	else return 0;
+}
+
+
+
+/*
+@purpose:
+	-Convert user inputted equation from infix to postfix notation.
+		-EX: 1+2*3 -> 1 2 3 * +
+@param:
+	-stack<string> tokenStack: User inputted equation in infix notation.
+
+@return:
+	-Returns the equation in postfix notation in a stack, ready to be fed directly into the postfix evaluation / calculator function.
+
+@notes:
+	- top = look at the top of the stack.
+	- pop = remove the top of the stack.
+	- push = add an element to the top of the stack.
+*/
+stack<string> shuntingYard(stack<string> tokenStack)
+{
+	stack<string> postFixStack;
+	stack<string> operatorStack;
+	string Token;//Stack index ref point
+
+	while (!tokenStack.empty())
+	{
+		Token = tokenStack.top();
+		tokenStack.pop();
+
+		//If current token is a positive or negative operand, push to postfix stack.
+		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])))
+		{
+			postFixStack.push(Token);
+		}
+
+		//If current token is an "(", push to operator stack.
+		else if (Token == "(")
+		{
+			operatorStack.push(Token);
+		}
+
+		//If current token is an ")", pop until matching "(" is found. Once found, pop "(" then continue.
+		else if (Token == ")")
+		{
+			while (operatorStack.top() != "(")
+			{
+				postFixStack.push(operatorStack.top());
+				operatorStack.pop();
+			}
+
+			operatorStack.pop();
+		}
+
+		//If reach here, token is an operator. Pop the operator stack and push to postfix stack until an operator with higher precedence is found.
+		else
+		{
+			while (!operatorStack.empty() && Precedence(Token) <= Precedence(operatorStack.top()) && (Token != "^" || Precedence(operatorStack.top()) > Precedence(Token)))
+			{
+				postFixStack.push(operatorStack.top());
+				operatorStack.pop();
+			}
+
+			operatorStack.push(Token);
+		}
+	}
+
+	//IF there are operators left in the operator stack, push them to the postfix stack.
+	while (!operatorStack.empty())
+	{
+		postFixStack.push(operatorStack.top());
+		operatorStack.pop();
+	}
+
+	//Final post fix equation is currently reversed, reverse and return it.
+	return ReverseStack(postFixStack);
+}
+
+
+
+
+/*
+@purpose:
+	-Perform an operation on two operands.
+
+@param:
+	-string& Token: Operator of precedence to be checked.
+	-double Operand1: First operand.
+	-double Operand2: Second operand.
+
+@return:
+	-Returns a double of the result of the operation.
+
+@notes:
+	-This was created to make the Calculator function more readable.
+	-The return 0.0 will NEVER be reached due to guard clauses in the validate input function but it was still included as good practice.
+*/
+double performCalculation(const string& Token, double Operand1, double Operand2)
+{
+
+	if (Token == "+") return Operand1 + Operand2;
+
+	else if (Token == "-") return Operand1 - Operand2;
+
+	else if (Token == "*") return Operand1 * Operand2;
+
+	else if (Token == "/") return Operand1 / Operand2;
+
+	else if (Token == "%") return fmod(Operand1, Operand2);
+
+	else if (Token == "^") return pow(Operand1, Operand2);
+
+	return 0.0;
+}
+
+
+/*
+@purpose:
+	-Calculates the post fix equation.
+
+@param:
+	-stack<string> postFixStack: User inputted equation in postfix notation.
+
+@return:
+	-Returns a double of the result of the postfix equation to the main function to be printed.
+
+@notes:
+	-stod = String to double.
+*/
+double evaluateEquation(stack<string> postFixStack)
+{
+	stack<double> evalStack;
+	string Token;
+	double Operand1 = 0.0;
+	double Operand2 = 0.0;
+	double Result = 0.0;
+
+	//Start eval iterating through the post fix stack by first poping off the top of the stack.
+	while (!postFixStack.empty())
+	{
+		Token = postFixStack.top();
+		postFixStack.pop();
+
+		//Check if current token is a number, negative number, or number with a decimal. If so, convert it to a double data type and push it to the eval stack.
+		if (isdigit(Token[0]) || Token[0] == '.' || (Token[0] == '-' && (isdigit(Token[1]) || Token[1] == '.')))
+		{
+			evalStack.push(stod(Token));
+		}
+
+		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
+		else
+		{
+			Operand2 = evalStack.top();
+			evalStack.pop();
+
+			if (Token == "-" && evalStack.empty())
+			{
+				evalStack.push(-Operand2); // Handle unary minus
+			}
+
+			else
+			{
+				Operand1 = evalStack.top(); evalStack.pop();
+				Result = performCalculation(Token, Operand1, Operand2);
+				evalStack.push(Result);
+			}
+		}
+	}
+
+	return evalStack.top();
+}

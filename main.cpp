@@ -55,7 +55,7 @@ int main()
 	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << endl;
 	while (true)
 	{
-		cout << "Enter an equation: ";
+		cout << endl <<"Enter an equation: ";
 		getline(cin, Equation);
 
 		if (!validateInput(Equation)) continue;
@@ -63,7 +63,11 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			testPrint(tokenizedStack);
+			postFixStack = shuntingYard(tokenizedStack);
+
+			Result = evaluateEquation(postFixStack);
+			cout << "Result: " << Result << endl;
+			//testPrint(postFixStack);
 		}
 
 

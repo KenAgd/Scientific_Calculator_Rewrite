@@ -5,7 +5,7 @@ using namespace std;
 #include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/calculate.cpp"
 //#include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/main.cpp"
 //#include <stack>
-
+#include <iostream>
 
 /*
 Template:     EXPECT_TRUE(validateInput(""));
@@ -95,9 +95,17 @@ TEST(validateInputTest, invalidInput)
 }
 
 
+/*
+@purpose: 
+	-creates a stack from an initializer_list
+@param: 
+	-const initializer_list<string>& elements: The elements to be added to the stack. Look at shuntingYardTest for syntax use and examples.
+@returns: 
+	-Returns a stack<string> with the elements in the initializer_list.
 
-
-
+@note:
+	-initializer_list is similar to parameterized constructors where the stack is declared and initialized with a list of elements in the same line.
+*/
 stack<string> createStack(const initializer_list<string>& elements) {
     return stack<string>(elements);
 }
@@ -137,7 +145,83 @@ TEST(tokenizeTest, validInput)
 }
 
 
+TEST(shuntingYardTest, validInput)
+{
+    stack<string>expectedStack;
+    stack<string>actualStack;
 
+	expectedStack = ReverseStack(createStack({ "-3.5", "+", "(", "-2.1", "*", "-4.2", ")", "/", "2" }));
+    actualStack = ReverseStack(createStack({"-3.5", "-2.1", "-4.2", "*", "2", "/", "+"}));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+    expectedStack = ReverseStack(createStack({ "7", "+", "8", "*", "9" }));
+    actualStack = ReverseStack(createStack({ "7", "8", "9", "*", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "15", "-", "4", "/", "2" }));
+    actualStack = ReverseStack(createStack({ "15", "4", "2", "/", "-" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "(", "5", "+", "6", ")", "*", "2" }));
+    actualStack = ReverseStack(createStack({ "5", "6", "+", "2", "*" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+
+    expectedStack = ReverseStack(createStack({ "12", "/", "3", "+", "1" }));
+    actualStack = ReverseStack(createStack({ "12", "3", "/", "1", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "9", "*", "(", "3", "+", "4", ")" }));
+    actualStack = ReverseStack(createStack({ "9", "3", "4", "+", "*" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "7", "-", "5", "+", "2" }));//
+    actualStack = ReverseStack(createStack({ "7", "5", "-", "2", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "8", "+", "(", "3", "*", "2", ")", "-", "4" }));//
+    actualStack = ReverseStack(createStack({ "8", "3", "2", "*", "+", "4", "-" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "6", "*", "2", "+", "3" }));
+    actualStack = ReverseStack(createStack({ "6", "2", "*", "3", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "14", "/", "(", "7", "-", "3", ")" }));
+    actualStack = ReverseStack(createStack({ "14", "7", "3", "-", "/" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "(", "8", "+", "2", ")", "*", "(", "5", "-", "1", ")" }));
+    actualStack = ReverseStack(createStack({ "8", "2", "+", "5", "1", "-", "*" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "-3.5", "+", "(", "-2.1", "*", "-4.2", ")", "/", "2" }));
+    actualStack = ReverseStack(createStack({ "-3.5", "-2.1", "-4.2", "*", "2", "/", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+}
+
+
+
+
+
+TEST(evaluateEquationTest, validInput)
+{
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2"))), 3.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2+3"))), 6.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2*3"))), 7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1*2+3"))), 5.0);
+}
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

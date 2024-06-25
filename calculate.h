@@ -16,7 +16,7 @@ stack<string> ReverseStack(stack<string> tokenStack);
 void testPrint(stack<string> Stack);
 stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
-double Calculator(stack<string> PostFixStack);
+double evaluateEquation(stack<string> postFixStack);
 
 
 
