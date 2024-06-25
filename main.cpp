@@ -32,6 +32,16 @@
 		-Decimal points.
 		-Negative (unary) numbers.
 		-Trigonometric functions.
+
+	-Coding conventions:
+		Naming conventions:
+			-All single word variables and function names are capitalized.
+			-All multi word variables and function names have the first word lowercase and the rest of the words are capitalized.
+		Comment conventions:
+			-Use JavaDoc style comments. Each function should have a purpose, parameters, return, and notes section.
+			-In line comments should be kept brief and shouldn't need the use of comment blocks. If the comment isn't in line with the code its describing, put it right above the line of code with one
+				less indentation than the code.
+			-One comment can be used to describe multiple lines of code IF the multiple lines of code all work towards achieving one goal.
 */
 
 
