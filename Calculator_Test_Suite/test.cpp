@@ -1,11 +1,17 @@
+/*
+@author: Kendric Agdaca
+@since: 06/06/24 ->
+
+@purpose:
+    -This is my very first time learning and using google test in order to mass unit test my code. I've kept it very simple and just used EXPECT_TRUE, EXPECT_FALSE, and EXPECT_EQ.
+
+@notes:
+    -#include "gtest/gtest.h" already included in pch.h
+*/
 #include "pch.h"
-//#include "gtest/gtest.h" already included in pch.h
-using namespace std;
 #include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/calculate.h"
 #include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/calculate.cpp"
-//#include "C:\Users\kenga\source\repos\C++\Scientific_Calculator_Rewrite/main.cpp"
-//#include <stack>
-#include <iostream>
+using namespace std;
 
 /*
 Template:     EXPECT_TRUE(validateInput(""));
@@ -87,11 +93,7 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("5%%2"));
     EXPECT_FALSE(validateInput("5%+2"));
     EXPECT_FALSE(validateInput("2+-"));        
-    EXPECT_FALSE(validateInput("2*-*3"));    
-
-
-
-
+    EXPECT_FALSE(validateInput("2*-*3"));
 }
 
 
@@ -145,6 +147,12 @@ TEST(tokenizeTest, validInput)
 }
 
 
+/*
+Format:
+	expectedStack = ReverseStack(createStack({expected}));
+	actualStack = ReverseStack(createStack({actual}));
+	EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+*/
 TEST(shuntingYardTest, validInput)
 {
     stack<string>expectedStack;
@@ -213,7 +221,6 @@ TEST(shuntingYardTest, validInput)
 
 
 
-
 /*
 Format: EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("equation"))), answer);
         EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize(""))), );
@@ -233,6 +240,8 @@ TEST(evaluateEquationTest, validInput)
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))"))), 4);
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))"))), -4);
 }
+
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -1,4 +1,12 @@
+/*
+@author: Kendric Agdaca
+@since: 06/06/24 ->
 
+@purpose:
+	-This is the main driver of the Scientific Calculator. It contains all the functions that are used to evaluate the equation.
+
+
+*/
 #include <iostream>
 #include <string>
 #include <unordered_set>
@@ -30,6 +38,7 @@ void testPrint(stack<string> Stack)
 }
 
 
+
 /*
 @purpose:
 	-Checks if a character is an operator.
@@ -57,6 +66,7 @@ bool isOperator(char Token)
 }
 
 
+
 /*
 @purpose:
 	-Checks if a Token is a trig function.
@@ -80,6 +90,33 @@ bool isFunction(const string& str) {
 	else {
 		return false;
 	}
+}
+
+
+
+/*
+@purpose:
+	-Reverse the stack passed into it. This is used in Shunting Yard and Tokenize function because after each function call, the equation within the stacks is in reverse order.
+
+@param:
+	-stack<string> tokenStack: Stack that will be reversed.
+
+@return:
+	-Return reversed stack.
+
+@notes:
+	-This was created since stack reversing was used in more than one function. Cleans up Shunting Yard and Tokenize functions.
+*/
+stack<string> ReverseStack(stack<string> tokenStack)
+{
+	stack<string> reverseStack;
+	while (!tokenStack.empty())
+	{
+		reverseStack.push(tokenStack.top());
+		tokenStack.pop();
+	}
+
+	return reverseStack;
 }
 
 
@@ -242,31 +279,6 @@ bool validateInput(const string& input) {
 
 	// Input is valid if all parentheses are balanced and we end expecting an operator
 	return true;
-}
-
-/*
-@purpose:
-	-Reverse the stack passed into it. This is used in Shunting Yard and Tokenize function because after each function call, the equation within the stacks is in reverse order.
-
-@param:
-	-stack<string> tokenStack: Stack that will be reversed.
-
-@return:
-	-Return reversed stack.
-
-@notes:
-	-This was created since stack reversing was used in more than one function. Cleans up Shunting Yard and Tokenize functions.
-*/
-stack<string> ReverseStack(stack<string> tokenStack)
-{
-	stack<string> reverseStack;
-	while (!tokenStack.empty())
-	{
-		reverseStack.push(tokenStack.top());
-		tokenStack.pop();
-	}
-
-	return reverseStack;
 }
 
 
@@ -496,7 +508,6 @@ stack<string> shuntingYard(stack<string> tokenStack)
 
 
 
-
 /*
 @purpose:
 	-Perform an operation on two operands.
@@ -530,6 +541,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 
 	return 0.0;
 }
+
 
 
 /*

@@ -10,16 +10,15 @@
 #include <cmath>
 using namespace std;
 
+//Auxiliary Functions
+void testPrint(stack<string> Stack);
 bool isOperator(char Token);
 bool isFunction(const string& str);
-bool validateInput(const string& input);
 stack<string> ReverseStack(stack<string> tokenStack);
-void testPrint(stack<string> Stack);
+
+//Main Functions
+bool validateInput(const string& input);
 stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
 double evaluateEquation(stack<string> postFixStack);
-
-
-
-
 #endif
