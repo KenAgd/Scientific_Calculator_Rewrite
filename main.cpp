@@ -118,9 +118,8 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
-
+			testPrint(postFixStack);
 			//Result = evaluateEquation(postFixStack);
 			cout << "Result: " << Result << endl;
 		}

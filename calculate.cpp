@@ -338,6 +338,7 @@ bool validateInput(const string& input) {
 @example:
 	-(3+4) -> ["-", "(", "3", "+", "4", ")"]
 	-.5+1 -> ["-0.5", "+", "1"]
+	12.345, parse 345 and add it to 12. to form the full 12.345
 */
 stack<string>Tokenize(const string& Equation)
 {
@@ -348,25 +349,25 @@ stack<string>Tokenize(const string& Equation)
 
 	while (i < Equation.length())
 	{
-		//check for decimal point and operand. 
+	//check for decimal point and operand. 
 		if (isdigit(Equation[i]) || Equation[i] == '.' || isalpha(Equation[i]))
 		{
 			Token.clear();
 
-			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+		//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
 			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 			{
 				Token += '0';
 			}
 
-			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
-			//EX: 12.345, parse 345 and add it to 12. to form the full 12.345
+		//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
 			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 			{
 				Token += Equation[i];
 				i++;
 			}
 			
+		//If trig function detected, append all letters to the token and push it to the token stack.
 			if (isalpha(Equation[i]))
 			{
 				while (i < Equation.length() && isalpha(Equation[i]))
@@ -375,15 +376,10 @@ stack<string>Tokenize(const string& Equation)
 					i++;
 				}
 
-				if (isFunction(Token))
-				{
-					tokenStack.push(Token);
-					continue;
-				}
+				tokenStack.push(Token);
+				continue;
 			}
 				
-			
-
 			tokenStack.push(Token);
 		}
 
