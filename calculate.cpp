@@ -349,7 +349,7 @@ stack<string>Tokenize(const string& Equation)
 	while (i < Equation.length())
 	{
 		//check for decimal point and operand. 
-		if (isdigit(Equation[i]) || Equation[i] == '.')
+		if (isdigit(Equation[i]) || Equation[i] == '.' || isalpha(Equation[i]))
 		{
 			Token.clear();
 
@@ -361,12 +361,28 @@ stack<string>Tokenize(const string& Equation)
 
 			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
 			//EX: 12.345, parse 345 and add it to 12. to form the full 12.345
-				//IF SOMETHING GOES WRONG IN TESTING P2, LOOK HERE FIRST.
 			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 			{
 				Token += Equation[i];
 				i++;
 			}
+			
+			if (isalpha(Equation[i]))
+			{
+				while (i < Equation.length() && isalpha(Equation[i]))
+				{
+					Token += Equation[i];
+					i++;
+				}
+
+				if (isFunction(Token))
+				{
+					tokenStack.push(Token);
+					continue;
+				}
+			}
+				
+			
 
 			tokenStack.push(Token);
 		}

@@ -243,6 +243,99 @@ TEST(tokenizeTest, validInput)
 
 	myStack = createStack({ "1", "-",  "-2" });
 	EXPECT_EQ(ReverseStack(myStack), Tokenize("1--2"));
+
+
+    myStack = createStack({ "sin", "(", "45", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45)"));
+
+    myStack = createStack({ "cos", "(", "30", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(30)"));
+
+    myStack = createStack({ "tan", "(", "60", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60)"));
+
+    myStack = createStack({ "log", "(", "100", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("log(100)"));
+
+    myStack = createStack({ "ln", "(", "2.71828", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(2.71828)"));
+
+    myStack = createStack({ "sqrt", "(", "16", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)"));
+
+    myStack = createStack({ "abs", "(", "-10", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10)"));
+
+    // Trigonometric functions with nested functions
+    myStack = createStack({ "sin", "(", "cos", "(", "30", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(cos(30))"));
+
+    myStack = createStack({ "tan", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(log(100))"));
+
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))"));
+
+    myStack = createStack({ "ln", "(", "sqrt", "(", "49", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(sqrt(49))"));
+
+    // Trigonometric functions with arithmetic operations
+    myStack = createStack({ "sin", "(", "45", ")", "+", "cos", "(", "30", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45)+cos(30)"));
+
+    myStack = createStack({ "tan", "(", "60", ")", "-", "log", "(", "10", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60)-log(10)"));
+
+    myStack = createStack({ "sqrt", "(", "16", ")", "*", "abs", "(", "-5", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)*abs(-5)"));
+
+    myStack = createStack({ "ln", "(", "2.71828", ")", "/", "2" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(2.71828)/2"));
+
+    // Nested trigonometric functions with arithmetic operations
+    myStack = createStack({ "sin", "(", "cos", "(", "30", ")", ")", "+", "tan", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(cos(30))+tan(log(100))"));
+
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")", "-", "ln", "(", "sqrt", "(", "49", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))-ln(sqrt(49))"));
+
+    // Trigonometric functions with complex arithmetic expressions
+    myStack = createStack({ "sin", "(", "45", "*", "log", "(", "10", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45*log(10))"));
+
+    myStack = createStack({ "cos", "(", "30", "/", "2", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(30/2)"));
+
+    myStack = createStack({ "tan", "(", "60", "+", "15", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60+15)"));
+
+    myStack = createStack({ "sqrt", "(", "16", "-", "4", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16-4)"));
+
+    myStack = createStack({ "abs", "(", "-10", "*", "2", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10*2)"));
+
+    // Edge cases
+    myStack = createStack({ "sin", "(", "sin", "(", "30", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(sin(30))"));
+
+    myStack = createStack({ "cos", "(", "cos", "(", "45", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(cos(45))"));
+
+    myStack = createStack({ "tan", "(", "tan", "(", "60", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(tan(60))"));
+
+    myStack = createStack({ "log", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("log(log(100))"));
+
+    myStack = createStack({ "ln", "(", "ln", "(", "2.71828", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(ln(2.71828))"));
+
+    myStack = createStack({ "sqrt", "(", "sqrt", "(", "16", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(sqrt(16))"));
+
+    myStack = createStack({ "abs", "(", "abs", "(", "-10", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(abs(-10))"));
 }
 
 
