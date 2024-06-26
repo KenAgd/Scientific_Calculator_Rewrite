@@ -82,7 +82,7 @@ bool isOperator(char Token)
 	-
 */
 bool isFunction(const string& str) {
-	static const unordered_set<string> functions = { "sin()", "cos()", "tan()", "log()", "ln()", "sqrt()", "abs()" };
+	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
 
 	if (functions.find(str) != functions.end()) {
 		return true;
@@ -139,6 +139,7 @@ bool validateInput(const string& input) {
 	bool expectOperator = false;
 	bool allowUnary = true;
 	bool hasDecimal = false;
+	string Token;
 	size_t i = 0;
 
 	if (input.empty())
@@ -264,6 +265,41 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
+
+
+		//handles trig functions. 
+		else if (isalpha(ch)) 
+		{
+			while (i < input.length() && isalpha(input[i])) //First load all letters of the trig function into the token.
+			{
+				Token += input[i];
+				i++;
+			}
+
+			if (isFunction(Token))//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, return false.
+			{
+				if (i >= input.length() || input[i] != '(') 
+				{
+					cout << "Error: Invalid use of function " << Token << ". Please try again." << endl;
+					return false;
+				}
+
+				Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
+				i++;
+				expectOperator = false;
+				allowUnary = true;
+			}
+			
+			
+			else 
+			{
+				cout << "Error: Invalid character detected. Please try again." << endl;
+				return false;
+			}
+
+			Token.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+		}
+
 		else
 		{
 			cout << "Error: Invalid character. Please try again." << endl;
@@ -271,14 +307,15 @@ bool validateInput(const string& input) {
 		}
 	}
 
+
 	if (!Parentheses.empty())
 	{
 		cout << "Error: Unbalanced parentheses. Please try again." << endl;
 		return false;
 	}
 
-	// Input is valid if all parentheses are balanced and we end expecting an operator
-	return true;
+	
+	return true;// Input is valid if all parentheses are balanced and we end expecting an operator
 }
 
 

@@ -43,6 +43,60 @@ TEST(validateInputTest, validInput)
     EXPECT_TRUE(validateInput("-(3+4)"));     
     EXPECT_TRUE(validateInput("5+-7"));       
     EXPECT_TRUE(validateInput("2*-(-4)"));    
+
+
+
+
+
+
+    EXPECT_TRUE(validateInput("sin(30)"));
+    EXPECT_TRUE(validateInput("cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)"));
+    EXPECT_TRUE(validateInput("log(100)"));
+    EXPECT_TRUE(validateInput("ln(2)"));
+    EXPECT_TRUE(validateInput("sqrt(16)"));
+    EXPECT_TRUE(validateInput("abs(-5)"));
+
+    EXPECT_TRUE(validateInput("sin(cos(30))"));
+    EXPECT_TRUE(validateInput("tan(log(100))"));
+    EXPECT_TRUE(validateInput("sqrt(abs(-9))"));
+    EXPECT_TRUE(validateInput("log(sqrt(100))"));
+
+    EXPECT_TRUE(validateInput("3+sin(45)"));
+    EXPECT_TRUE(validateInput("2*cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)-1"));
+    EXPECT_TRUE(validateInput("log(100)/2"));
+    EXPECT_TRUE(validateInput("4*ln(2)"));
+    EXPECT_TRUE(validateInput("sqrt(16)+2"));
+    EXPECT_TRUE(validateInput("abs(-5)-3"));
+
+    EXPECT_TRUE(validateInput("3+sin(cos(30))"));
+    EXPECT_TRUE(validateInput("2*tan(log(100))"));
+    EXPECT_TRUE(validateInput("sqrt(abs(-9))/3"));
+    EXPECT_TRUE(validateInput("log(sqrt(100))-1"));
+
+    EXPECT_TRUE(validateInput("sin(30)+cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)*log(10)"));
+    EXPECT_TRUE(validateInput("sqrt(16)/abs(-4)"));
+    EXPECT_TRUE(validateInput("log(100)+ln(2)"));
+
+    EXPECT_TRUE(validateInput("sin(30+45)"));
+    EXPECT_TRUE(validateInput("cos(60-30)"));
+    EXPECT_TRUE(validateInput("tan(45*2)"));
+    EXPECT_TRUE(validateInput("log(100/10)"));
+    EXPECT_TRUE(validateInput("sqrt(16+9)"));
+    EXPECT_TRUE(validateInput("abs(-5-3)"));
+
+    EXPECT_TRUE(validateInput("sin(0)"));
+    EXPECT_TRUE(validateInput("cos(90)"));
+    EXPECT_TRUE(validateInput("tan(0)"));
+    EXPECT_TRUE(validateInput("log(1)"));
+    EXPECT_TRUE(validateInput("ln(1)"));
+    EXPECT_TRUE(validateInput("sqrt(0)"));
+    EXPECT_TRUE(validateInput("abs(0)"));
+    EXPECT_TRUE(validateInput("tan(45*log(10))"));
+    EXPECT_TRUE(validateInput("abs(-5-3)"));
+    EXPECT_TRUE(validateInput("sin(cos(tan(30)))"));
 }
 
 
@@ -94,6 +148,51 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("5%+2"));
     EXPECT_FALSE(validateInput("2+-"));        
     EXPECT_FALSE(validateInput("2*-*3"));
+
+
+
+    EXPECT_FALSE(validateInput("sin()"));
+    EXPECT_FALSE(validateInput("cos(60"));
+    EXPECT_FALSE(validateInput("tan45)"));
+    EXPECT_FALSE(validateInput("log(100"));
+    EXPECT_FALSE(validateInput("ln2)"));
+    EXPECT_FALSE(validateInput("sqrt16)"));
+    EXPECT_FALSE(validateInput("abs(-5"));
+
+    EXPECT_FALSE(validateInput("sin(cos(30)"));
+    EXPECT_FALSE(validateInput("tan(log100))"));
+    EXPECT_FALSE(validateInput("sqrt(abs-9))"));
+    EXPECT_FALSE(validateInput("log(sqrt100)"));
+
+    EXPECT_FALSE(validateInput("3+sin45)"));
+    EXPECT_FALSE(validateInput("2*cos(60"));
+    EXPECT_FALSE(validateInput("tan45)-1"));
+    EXPECT_FALSE(validateInput("log100)/2"));
+    EXPECT_FALSE(validateInput("4*ln2)"));
+    EXPECT_FALSE(validateInput("sqrt16)+2"));
+    EXPECT_FALSE(validateInput("abs(-5-3"));
+
+    EXPECT_FALSE(validateInput("3+sin(cos(30)"));
+    EXPECT_FALSE(validateInput("2*tan(log100))"));
+    EXPECT_FALSE(validateInput("sqrt(abs-9))/3"));
+    EXPECT_FALSE(validateInput("log(sqrt100)-1"));
+
+    EXPECT_FALSE(validateInput("sin(30+cos(60)"));
+
+    EXPECT_FALSE(validateInput("sqrt(16/abs(-4)"));
+    EXPECT_FALSE(validateInput("log100+ln(2)"));
+
+    EXPECT_FALSE(validateInput("sin30+45)"));
+    EXPECT_FALSE(validateInput("cos60-30)"));
+    EXPECT_FALSE(validateInput("tan(45*2"));
+    EXPECT_FALSE(validateInput("log(100/10"));
+    EXPECT_FALSE(validateInput("sqrt(16+9"));
+
+
+
+    EXPECT_FALSE(validateInput("log(sqrt(abs(-16))))"));
+    EXPECT_FALSE(validateInput("sin(cos(tan(30))"));
+    EXPECT_FALSE(validateInput("log(sqrt(abs(-16))"));
 }
 
 
