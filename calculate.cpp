@@ -508,7 +508,7 @@ stack<string> shuntingYard(stack<string> tokenStack)
 		tokenStack.pop();
 
 		//If current token is a positive or negative operand, push to postfix stack.
-		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])))
+		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) || isFunction(Token))
 		{
 			postFixStack.push(Token);
 		}
@@ -530,6 +530,8 @@ stack<string> shuntingYard(stack<string> tokenStack)
 
 			operatorStack.pop();
 		}
+
+
 
 		//If reach here, token is an operator. Pop the operator stack and push to postfix stack until an operator with higher precedence is found.
 		else

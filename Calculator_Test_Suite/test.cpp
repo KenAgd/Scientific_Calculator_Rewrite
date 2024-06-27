@@ -339,11 +339,35 @@ TEST(tokenizeTest, validInput)
 }
 
 
+
+
+string stackToString(std::stack<std::string> s) {
+    std::ostringstream oss;
+    while (!s.empty()) {
+        oss << s.top() << " ";
+        s.pop();
+    }
+    std::string result = oss.str();
+    if (!result.empty()) {
+        result.pop_back();  // Remove the trailing space
+    }
+    return result;
+}
+
+
+
+
 /*
 Format:
 	expectedStack = ReverseStack(createStack({expected}));
 	actualStack = ReverseStack(createStack({actual}));
 	EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+@notes:
+    -EXPECT_EQ(shuntingYard(expectedStack), actualStack) << "actual stack " << stackToString(actualStack) << endl << "expected stack " << stackToString(expectedStack);
+        This is how you go about error printing to see expected and actual. Cant just call testPrint since its a void that returns nothing.
+        stackToString had to be made since it returns a string, which is printable using cout.
 */
 TEST(shuntingYardTest, validInput)
 {
@@ -409,6 +433,65 @@ TEST(shuntingYardTest, validInput)
     actualStack = ReverseStack(createStack({ "-3.5", "-2.1", "-4.2", "*", "2", "/", "+" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "2", "+", "3", ")" }));
+    actualStack = ReverseStack(createStack({ "sin", "2", "3", "+" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "cos", "(", "90", ")" }));
+    actualStack = createStack({ "90", "cos" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "tan", "(", "30", ")" }));
+    actualStack = createStack({ "30", "tan" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "log", "(", "100", ")" }));
+    actualStack = createStack({ "100", "log" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "ln", "(", "2", ")" }));
+    actualStack = createStack({ "2", "ln" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sqrt", "(", "4", ")" }));
+    actualStack = createStack({ "4", "sqrt" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", ")" }));
+    actualStack = createStack({ "-5", "abs" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "30", ")", ")" }));
+    actualStack = createStack({ "30", "cos", "sin" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "tan", "(", "45", "*", "log", "(", "10", ")", ")" }));
+    actualStack = createStack({ "*", "10", "log", "45", "tan" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", "-", "3", ")" }));
+    actualStack = createStack({ "-", "3", "-5", "abs" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "tan", "(", "30", ")", ")", ")" }));
+    actualStack = createStack({ "30", "tan", "cos", "sin" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sqrt", "(", "abs", "(", "-5", "+", "3", ")", ")" }));
+    actualStack = createStack({ "+", "3", "-5", "abs", "sqrt" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 }
 
 

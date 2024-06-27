@@ -42,6 +42,33 @@
 			-In line comments should be kept brief and shouldn't need the use of comment blocks. If the comment isn't in line with the code its describing, put it right above the line of code with one
 				less indentation than the code.
 			-One comment can be used to describe multiple lines of code IF the multiple lines of code all work towards achieving one goal.
+
+	-Upon mid completion reflection/evaluation, I could have used a combination of queues and stacks to solve the problem.
+		-A queue could've been used in validate and tokenize and a stack would be used in shunting yard and evaluating the equation. If I were to follow this approach, when passing the queue tokenize output
+			to stack shunting yard, I would just push the front of the queue into the stack and then pop the queue.
+		-EX:
+			    queue<string> tokenQueue;
+				tokenQueue.push("3");
+				tokenQueue.push("+");
+				tokenQueue.push("4");
+				tokenQueue.push("*");
+				tokenQueue.push("2");
+
+				// Create a stack and transfer elements from the queue to the stack
+				stack<string> tokenStack;
+				while (!tokenQueue.empty()) 
+				{
+					tokenStack.push(tokenQueue.front());
+					tokenQueue.pop();
+				}
+
+		-Stacks are basically a standard linked list while a queue is a circular linked list. Both have a time complexity of O(1) for push/enqueue, pop/dequeue, front/peek, and IsEmpty.
+		-Stacks are LIFO and queues are FIFO. For stacks, the equation would be read from bottom to top while for queues, the equation would be read from left to right. 
+		-At the beginning of the project I chose to just use stacks for everything for the sake of consistency and reduce the need for converting between stacks and queues, HOWEVER,
+			it would have been a good learning opportunity to learn and use queues. 
+
+		-For trig functions in shunting yard and evaluating the equation, they dont have operator precedence because they aren't operators. Thus, they are treated as operands.
+
 */
 #include <iostream>
 #include <string>
@@ -118,6 +145,7 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
+			//testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
 			testPrint(postFixStack);
 			//Result = evaluateEquation(postFixStack);
