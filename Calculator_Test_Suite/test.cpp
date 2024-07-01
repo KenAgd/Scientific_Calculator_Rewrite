@@ -368,6 +368,8 @@ Format:
     -EXPECT_EQ(shuntingYard(expectedStack), actualStack) << "actual stack " << stackToString(actualStack) << endl << "expected stack " << stackToString(expectedStack);
         This is how you go about error printing to see expected and actual. Cant just call testPrint since its a void that returns nothing.
         stackToString had to be made since it returns a string, which is printable using cout.
+    -*******The way EXPECT_EQ compares stacks is by popping and comparing top elements. Loading stacks using ({}) loads the stack from
+        left to right, bottom to top. BASICALLY RIGHT SIDE OF ({}) STACK IS THE TOP.
 */
 TEST(shuntingYardTest, validInput)
 {
@@ -404,12 +406,12 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "7", "-", "5", "+", "2" }));//
+    expectedStack = ReverseStack(createStack({ "7", "-", "5", "+", "2" }));
     actualStack = ReverseStack(createStack({ "7", "5", "-", "2", "+" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "8", "+", "(", "3", "*", "2", ")", "-", "4" }));//
+    expectedStack = ReverseStack(createStack({ "8", "+", "(", "3", "*", "2", ")", "-", "4" }));
     actualStack = ReverseStack(createStack({ "8", "3", "2", "*", "+", "4", "-" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
@@ -435,62 +437,62 @@ TEST(shuntingYardTest, validInput)
 
 
     expectedStack = ReverseStack(createStack({ "sin", "(", "2", "+", "3", ")" }));
-    actualStack = ReverseStack(createStack({ "sin", "2", "3", "+" }));
+    actualStack = ReverseStack(createStack({ "2", "3", "+", "sin" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "cos", "(", "90", ")" }));
-    actualStack = createStack({ "90", "cos" });
+    actualStack = createStack({ "cos", "90" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "tan", "(", "30", ")" }));
-    actualStack = createStack({ "30", "tan" });
+    actualStack = createStack({ "tan", "30" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "log", "(", "100", ")" }));
-    actualStack = createStack({ "100", "log" });
+    actualStack = createStack({ "log", "100" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "ln", "(", "2", ")" }));
-    actualStack = createStack({ "2", "ln" });
+    actualStack = createStack({ "ln", "2" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "sqrt", "(", "4", ")" }));
-    actualStack = createStack({ "4", "sqrt" });
+    actualStack = createStack({ "sqrt", "4" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "abs", "(", "-5", ")" }));
-    actualStack = createStack({ "-5", "abs" });
+    actualStack = createStack({ "abs", "-5" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "30", ")", ")" }));
-    actualStack = createStack({ "30", "cos", "sin" });
+    actualStack = createStack({ "sin", "cos", "30" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "tan", "(", "45", "*", "log", "(", "10", ")", ")" }));
-    actualStack = createStack({ "*", "10", "log", "45", "tan" });
+    actualStack = createStack({ "tan", "*", "log", "10", "45" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "abs", "(", "-5", "-", "3", ")" }));
-    actualStack = createStack({ "-", "3", "-5", "abs" });
+    actualStack = createStack({ "abs", "-", "3", "-5" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "tan", "(", "30", ")", ")", ")" }));
-    actualStack = createStack({ "30", "tan", "cos", "sin" });
+    actualStack = createStack({ "sin", "cos", "tan", "30" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
     expectedStack = ReverseStack(createStack({ "sqrt", "(", "abs", "(", "-5", "+", "3", ")", ")" }));
-    actualStack = createStack({ "+", "3", "-5", "abs", "sqrt" });
+    actualStack = createStack({ "sqrt", "abs", "+", "3", "-5" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 }
 
@@ -514,6 +516,27 @@ TEST(evaluateEquationTest, validInput)
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6"))), 19.0);
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))"))), 4);
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))"))), -4);
+
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)"))), -0.988);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)"))), 0.525);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)"))), 0.320);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)"))), 2.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)"))), 1.000);
+
+    // Test cases for nested trigonometric functions
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))"))), 0.153);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))"))), -2.185);
+
+    // Edge cases
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)"))), 0.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)"))), 0.894);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)"))), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)"))), -0.598);
+
+    // Mixed trigonometric and arithmetic operations
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)"))), 1.414);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)"))), 1.386);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)"))), 1.732);
 }
 
 
