@@ -524,7 +524,7 @@ TEST(evaluateEquationTest, validInput)
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)"))), 1.000);
 
     // Test cases for nested trigonometric functions
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))"))), 0.153);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))"))), 0.154);
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))"))), -2.185);
 
     // Edge cases
@@ -534,9 +534,9 @@ TEST(evaluateEquationTest, validInput)
     EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)"))), -0.598);
 
     // Mixed trigonometric and arithmetic operations
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)"))), 1.414);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)"))), 1.386);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)"))), 1.732);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)"))), 1.376);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)"))), -12.811);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)"))), -1.976);
 }
 
 

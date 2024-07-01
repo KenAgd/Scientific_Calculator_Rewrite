@@ -80,7 +80,7 @@ bool isOperator(char Token)
 
 @notes:
 	-
-*//*
+*/
 bool isFunction(const string& str) {
 	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
 
@@ -90,7 +90,7 @@ bool isFunction(const string& str) {
 	else {
 		return false;
 	}
-}*/
+}
 
 
 
@@ -525,18 +525,26 @@ stack<string> shuntingYard(stack<string> tokenStack)
 			operatorStack.push(Token);
 		}
 
-		//If current token is an ")", pop until matching "(" is found. Once found, pop "(" then continue.
-		else if (Token == ")")
+		
+
+	//If current token is an ")", pop until matching "(" is found. Once found, pop "(" then continue.
+		else if (Token == ")") 
 		{
-			while (operatorStack.top() != "(")
+			while (operatorStack.top() != "(") 
 			{
 				postFixStack.push(operatorStack.top());
 				operatorStack.pop();
 			}
+			operatorStack.pop(); // Pop the "("
 
-			operatorStack.pop();
+
+		// If there is a function on top of the operator stack, pop it to postfix stack. This helps to eval use of multiple trig/log functions in one equation.
+			if (!operatorStack.empty() && isFunction(operatorStack.top())) 
+			{
+				postFixStack.push(operatorStack.top());
+				operatorStack.pop();
+			}
 		}
-
 
 
 		//If reach here, token is an operator. Pop the operator stack and push to postfix stack until an operator with higher precedence is found.
@@ -568,8 +576,18 @@ stack<string> shuntingYard(stack<string> tokenStack)
 }
 
 /*
-double performTrigCalculation(const string& Token, double Operand)
+@purpose:
+	-
+@param:
+	-
+@return:
+	-
+@notes:
+	-by default sin, cos, tan, log, ln, sqrt, and abs are in radians but user input is in degrees.
+*/
+double performTrigCalculation(const string& Token, double& Operand)
 {
+	//double degreeToRadian = Operand * (3.14159 / 180.0);
 	if (Token == "sin") return sin(Operand);
 	else if (Token == "cos") return cos(Operand);
 	else if (Token == "tan") return tan(Operand);
@@ -579,7 +597,7 @@ double performTrigCalculation(const string& Token, double Operand)
 	else if (Token == "abs") return fabs(Operand);
 
 	return 0.0;
-}*/
+}
 /*
 @purpose:
 	-Perform an operation on two operands.
@@ -595,7 +613,7 @@ double performTrigCalculation(const string& Token, double Operand)
 @notes:
 	-This was created to make the Calculator function more readable.
 	-The return 0.0 will NEVER be reached due to guard clauses in the validate input function but it was still included as good practice.
-*//*
+*/
 double performCalculation(const string& Token, double Operand1, double Operand2)
 {
 
@@ -612,7 +630,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 	else if (Token == "^") return pow(Operand1, Operand2);
 
 	return 0.0;
-}*/
+}
 
 
 
@@ -628,7 +646,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 
 @notes:
 	-stod = String to double.
-*//*
+*/
 double evaluateEquation(stack<string> postFixStack)
 {
 	stack<double> evalStack;
@@ -654,9 +672,9 @@ double evaluateEquation(stack<string> postFixStack)
 
 		else if (isFunction(Token)) 
 		{
-			// Recursively evaluate the function argument(s)
-			double argument = evaluateEquation(postFixStack);
-			Result = performTrigCalculation(Token, argument);
+			double Operand = evalStack.top();
+			evalStack.pop();
+			double Result = performTrigCalculation(Token, Operand);
 			evalStack.push(Result);
 		}
 
@@ -685,9 +703,21 @@ double evaluateEquation(stack<string> postFixStack)
 	Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
 
 	return Result;
-}*/
+}
 
 
+
+
+
+
+
+
+
+
+
+
+
+/*
 #include <unordered_map>
 
 bool isNumber(const string& s) {
@@ -737,7 +767,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 				Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
 */
 
-
+/*
 double evaluateEquation(stack<string>& reverseStack) {
 	stack<double> evalStack;
 	string Token;
@@ -778,7 +808,7 @@ double evaluateEquation(stack<string>& reverseStack) {
 			/*else {
 				throw runtime_error("Unknown function: " + functionName);
 			}*/
-
+/*
 			evalStack.push(Result);
 		}
 		else
@@ -792,7 +822,7 @@ double evaluateEquation(stack<string>& reverseStack) {
 				}
 				/*else {
 					throw runtime_error("Invalid postfix expression");
-				}*/
+				}*//*
 			}
 			else {
 				double Operand1 = evalStack.top();
@@ -805,9 +835,9 @@ double evaluateEquation(stack<string>& reverseStack) {
 
 	/*if (evalStack.size() != 1) {
 		throw runtime_error("Invalid postfix expression");
-	}*/
+	}*//*
 
 	Result = evalStack.top();
 	Result = round(evalStack.top() * 1000) / 1000; // round to 3 decimal places
 	return Result;
-}
+}*/

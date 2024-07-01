@@ -149,8 +149,8 @@ int main()
 			postFixStack = shuntingYard(tokenizedStack);
 			testPrint(postFixStack);
 			//evaluateEquation(postFixStack);
-//			Result = evaluateEquation(postFixStack);
-		//	cout << "Result: " << Result << endl;
+			Result = evaluateEquation(postFixStack);
+			cout << "Result: " << Result << endl;
 		}
 
 

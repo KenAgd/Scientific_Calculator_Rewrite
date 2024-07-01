@@ -20,9 +20,8 @@ stack<string> ReverseStack(stack<string> tokenStack);
 bool validateInput(const string& input);
 stack<string> Tokenize(const string& input);
 
-string extractOperandFromFunction(const string& token);
+
 
 stack<string> shuntingYard(stack<string> TokenStack);
-//double evaluateEquation(stack<string> postFixStack);
-double evaluateEquation(stack<string>& reverseStack);
+double evaluateEquation(stack<string> postFixStack);
 #endif
