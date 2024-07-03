@@ -123,16 +123,20 @@ bool Restart()
 	-getline is used over cin because cin doesn't accept spaces.
 		example: 1 + 1 in cin would just be 1
 				 1+1 in cin would be 1+1
+	-bool degrees = 1
+		  radians = 0
 */
 int main()
 {
 	string Equation;
+	bool DegOrRad = 0; //By default calculate in radian mode.
 	stack<string>tokenizedStack;
 	stack<string>postFixStack;
 	double Result = 0.0;
 	
+	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << "If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'." << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
@@ -140,16 +144,27 @@ int main()
 
 		if (Equation == "exit" || Equation == "quit" || Equation == "Exit" || Equation == "Quit") break;
 
+		if (Equation == "rad" || Equation == "Rad")
+		{
+			DegOrRad = 0;
+			cout << "Switched to Radian mode." << endl;
+			continue;
+		}
+
+		if (Equation == "deg" || Equation == "Deg")
+		{
+			DegOrRad = 1;
+			cout << "Switched to Degrees mode." << endl;
+			continue;
+		}
+
 		if (!validateInput(Equation)) continue;
 
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			//testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
-			testPrint(postFixStack);
-			//evaluateEquation(postFixStack);
-			Result = evaluateEquation(postFixStack);
+			Result = evaluateEquation(postFixStack, DegOrRad);
 			cout << "Result: " << Result << endl;
 		}
 

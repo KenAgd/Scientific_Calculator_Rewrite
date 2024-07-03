@@ -148,9 +148,6 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("5%+2"));
     EXPECT_FALSE(validateInput("2+-"));        
     EXPECT_FALSE(validateInput("2*-*3"));
-
-
-
     EXPECT_FALSE(validateInput("sin()"));
     EXPECT_FALSE(validateInput("cos(60"));
     EXPECT_FALSE(validateInput("tan45)"));
@@ -158,12 +155,10 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("ln2)"));
     EXPECT_FALSE(validateInput("sqrt16)"));
     EXPECT_FALSE(validateInput("abs(-5"));
-
     EXPECT_FALSE(validateInput("sin(cos(30)"));
     EXPECT_FALSE(validateInput("tan(log100))"));
     EXPECT_FALSE(validateInput("sqrt(abs-9))"));
     EXPECT_FALSE(validateInput("log(sqrt100)"));
-
     EXPECT_FALSE(validateInput("3+sin45)"));
     EXPECT_FALSE(validateInput("2*cos(60"));
     EXPECT_FALSE(validateInput("tan45)-1"));
@@ -171,25 +166,18 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("4*ln2)"));
     EXPECT_FALSE(validateInput("sqrt16)+2"));
     EXPECT_FALSE(validateInput("abs(-5-3"));
-
     EXPECT_FALSE(validateInput("3+sin(cos(30)"));
     EXPECT_FALSE(validateInput("2*tan(log100))"));
     EXPECT_FALSE(validateInput("sqrt(abs-9))/3"));
     EXPECT_FALSE(validateInput("log(sqrt100)-1"));
-
     EXPECT_FALSE(validateInput("sin(30+cos(60)"));
-
     EXPECT_FALSE(validateInput("sqrt(16/abs(-4)"));
     EXPECT_FALSE(validateInput("log100+ln(2)"));
-
     EXPECT_FALSE(validateInput("sin30+45)"));
     EXPECT_FALSE(validateInput("cos60-30)"));
     EXPECT_FALSE(validateInput("tan(45*2"));
     EXPECT_FALSE(validateInput("log(100/10"));
     EXPECT_FALSE(validateInput("sqrt(16+9"));
-
-
-
     EXPECT_FALSE(validateInput("log(sqrt(abs(-16))))"));
     EXPECT_FALSE(validateInput("sin(cos(tan(30))"));
     EXPECT_FALSE(validateInput("log(sqrt(abs(-16))"));
@@ -502,43 +490,80 @@ TEST(shuntingYardTest, validInput)
 Format: EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("equation"))), answer);
         EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize(""))), );
 */
-TEST(evaluateEquationTest, validInput)
+TEST(evaluateEquationTest, validRadInput)
 {
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2"))), 3.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6"))), 11.167);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9"))), 135.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2"))), 13.7);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7"))), 1.714);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)"))), -7.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7"))), -4.214);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42"))), 42.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2"))), 1.5);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6"))), 19.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))"))), 4);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))"))), -4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2")), 0), 3.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6")), 0), 11.167);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9")), 0), 135.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2")), 0), 13.7);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7")), 0), 1.714);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)")), 0), -7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7")), 0), -4.214);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42")), 0), 42.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2")), 0), 1.5);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6")), 0), 19.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))")), 0), 4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))")), 0), -4);
 
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)"))), -0.988);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)"))), 0.525);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)"))), 0.320);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)"))), 2.000);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)"))), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)")), 0), -0.988);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)")), 0), 0.525);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)")), 0), 0.320);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)")), 0), 2.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)")), 0), 1.000);
 
     // Test cases for nested trigonometric functions
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))"))), 0.154);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))"))), -2.185);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))")), 0), 0.154);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))")), 0), -2.185);
 
     // Edge cases
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)"))), 0.000);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)"))), 0.894);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)"))), 1.000);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)"))), -0.598);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)")), 0), 0.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)")), 0), 0.894);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)")), 0), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)")), 0), -0.598);
 
     // Mixed trigonometric and arithmetic operations
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)"))), 1.376);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)"))), -12.811);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)"))), -1.976);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)")), 0), 1.376);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)")), 0), -12.811);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)")), 0), -1.976);
 }
 
+
+TEST(evaluateEquationTest, validDegInput)
+{
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2")), 1), 3.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6")), 1), 11.167);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9")), 1), 135.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2")), 1), 13.7);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7")), 1), 1.714);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)")), 1), -7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7")), 1), -4.214);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42")), 1), 42.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2")), 1), 1.5);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6")), 1), 19.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))")), 1), 4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))")), 1), -4);
+
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)")), 1), .500);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)")), 1), 0.707);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)")), 1), 1.732);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)")), 1), 2.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)")), 1), 1.000);
+
+    // Test cases for nested trigonometric functions
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))")), 1), 0.015);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))")), 1), 0.035);
+
+    // Edge cases
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)")), 1), 0.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)")), 1), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)")), 1), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)")), 1), -1.000);
+
+    // Mixed trigonometric and arithmetic operations
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)")), 1), 1.414);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)")), 1), 1.155);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)")), 1), 1.000);
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
