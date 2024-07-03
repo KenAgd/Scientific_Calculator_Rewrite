@@ -43,6 +43,60 @@ TEST(validateInputTest, validInput)
     EXPECT_TRUE(validateInput("-(3+4)"));     
     EXPECT_TRUE(validateInput("5+-7"));       
     EXPECT_TRUE(validateInput("2*-(-4)"));    
+
+
+
+
+
+
+    EXPECT_TRUE(validateInput("sin(30)"));
+    EXPECT_TRUE(validateInput("cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)"));
+    EXPECT_TRUE(validateInput("log(100)"));
+    EXPECT_TRUE(validateInput("ln(2)"));
+    EXPECT_TRUE(validateInput("sqrt(16)"));
+    EXPECT_TRUE(validateInput("abs(-5)"));
+
+    EXPECT_TRUE(validateInput("sin(cos(30))"));
+    EXPECT_TRUE(validateInput("tan(log(100))"));
+    EXPECT_TRUE(validateInput("sqrt(abs(-9))"));
+    EXPECT_TRUE(validateInput("log(sqrt(100))"));
+
+    EXPECT_TRUE(validateInput("3+sin(45)"));
+    EXPECT_TRUE(validateInput("2*cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)-1"));
+    EXPECT_TRUE(validateInput("log(100)/2"));
+    EXPECT_TRUE(validateInput("4*ln(2)"));
+    EXPECT_TRUE(validateInput("sqrt(16)+2"));
+    EXPECT_TRUE(validateInput("abs(-5)-3"));
+
+    EXPECT_TRUE(validateInput("3+sin(cos(30))"));
+    EXPECT_TRUE(validateInput("2*tan(log(100))"));
+    EXPECT_TRUE(validateInput("sqrt(abs(-9))/3"));
+    EXPECT_TRUE(validateInput("log(sqrt(100))-1"));
+
+    EXPECT_TRUE(validateInput("sin(30)+cos(60)"));
+    EXPECT_TRUE(validateInput("tan(45)*log(10)"));
+    EXPECT_TRUE(validateInput("sqrt(16)/abs(-4)"));
+    EXPECT_TRUE(validateInput("log(100)+ln(2)"));
+
+    EXPECT_TRUE(validateInput("sin(30+45)"));
+    EXPECT_TRUE(validateInput("cos(60-30)"));
+    EXPECT_TRUE(validateInput("tan(45*2)"));
+    EXPECT_TRUE(validateInput("log(100/10)"));
+    EXPECT_TRUE(validateInput("sqrt(16+9)"));
+    EXPECT_TRUE(validateInput("abs(-5-3)"));
+
+    EXPECT_TRUE(validateInput("sin(0)"));
+    EXPECT_TRUE(validateInput("cos(90)"));
+    EXPECT_TRUE(validateInput("tan(0)"));
+    EXPECT_TRUE(validateInput("log(1)"));
+    EXPECT_TRUE(validateInput("ln(1)"));
+    EXPECT_TRUE(validateInput("sqrt(0)"));
+    EXPECT_TRUE(validateInput("abs(0)"));
+    EXPECT_TRUE(validateInput("tan(45*log(10))"));
+    EXPECT_TRUE(validateInput("abs(-5-3)"));
+    EXPECT_TRUE(validateInput("sin(cos(tan(30)))"));
 }
 
 
@@ -94,6 +148,39 @@ TEST(validateInputTest, invalidInput)
     EXPECT_FALSE(validateInput("5%+2"));
     EXPECT_FALSE(validateInput("2+-"));        
     EXPECT_FALSE(validateInput("2*-*3"));
+    EXPECT_FALSE(validateInput("sin()"));
+    EXPECT_FALSE(validateInput("cos(60"));
+    EXPECT_FALSE(validateInput("tan45)"));
+    EXPECT_FALSE(validateInput("log(100"));
+    EXPECT_FALSE(validateInput("ln2)"));
+    EXPECT_FALSE(validateInput("sqrt16)"));
+    EXPECT_FALSE(validateInput("abs(-5"));
+    EXPECT_FALSE(validateInput("sin(cos(30)"));
+    EXPECT_FALSE(validateInput("tan(log100))"));
+    EXPECT_FALSE(validateInput("sqrt(abs-9))"));
+    EXPECT_FALSE(validateInput("log(sqrt100)"));
+    EXPECT_FALSE(validateInput("3+sin45)"));
+    EXPECT_FALSE(validateInput("2*cos(60"));
+    EXPECT_FALSE(validateInput("tan45)-1"));
+    EXPECT_FALSE(validateInput("log100)/2"));
+    EXPECT_FALSE(validateInput("4*ln2)"));
+    EXPECT_FALSE(validateInput("sqrt16)+2"));
+    EXPECT_FALSE(validateInput("abs(-5-3"));
+    EXPECT_FALSE(validateInput("3+sin(cos(30)"));
+    EXPECT_FALSE(validateInput("2*tan(log100))"));
+    EXPECT_FALSE(validateInput("sqrt(abs-9))/3"));
+    EXPECT_FALSE(validateInput("log(sqrt100)-1"));
+    EXPECT_FALSE(validateInput("sin(30+cos(60)"));
+    EXPECT_FALSE(validateInput("sqrt(16/abs(-4)"));
+    EXPECT_FALSE(validateInput("log100+ln(2)"));
+    EXPECT_FALSE(validateInput("sin30+45)"));
+    EXPECT_FALSE(validateInput("cos60-30)"));
+    EXPECT_FALSE(validateInput("tan(45*2"));
+    EXPECT_FALSE(validateInput("log(100/10"));
+    EXPECT_FALSE(validateInput("sqrt(16+9"));
+    EXPECT_FALSE(validateInput("log(sqrt(abs(-16))))"));
+    EXPECT_FALSE(validateInput("sin(cos(tan(30))"));
+    EXPECT_FALSE(validateInput("log(sqrt(abs(-16))"));
 }
 
 
@@ -144,7 +231,118 @@ TEST(tokenizeTest, validInput)
 
 	myStack = createStack({ "1", "-",  "-2" });
 	EXPECT_EQ(ReverseStack(myStack), Tokenize("1--2"));
+
+
+    myStack = createStack({ "sin", "(", "45", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45)"));
+
+    myStack = createStack({ "cos", "(", "30", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(30)"));
+
+    myStack = createStack({ "tan", "(", "60", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60)"));
+
+    myStack = createStack({ "log", "(", "100", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("log(100)"));
+
+    myStack = createStack({ "ln", "(", "2.71828", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(2.71828)"));
+
+    myStack = createStack({ "sqrt", "(", "16", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)"));
+
+    myStack = createStack({ "abs", "(", "-10", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10)"));
+
+    // Trigonometric functions with nested functions
+    myStack = createStack({ "sin", "(", "cos", "(", "30", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(cos(30))"));
+
+    myStack = createStack({ "tan", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(log(100))"));
+
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))"));
+
+    myStack = createStack({ "ln", "(", "sqrt", "(", "49", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(sqrt(49))"));
+
+    // Trigonometric functions with arithmetic operations
+    myStack = createStack({ "sin", "(", "45", ")", "+", "cos", "(", "30", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45)+cos(30)"));
+
+    myStack = createStack({ "tan", "(", "60", ")", "-", "log", "(", "10", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60)-log(10)"));
+
+    myStack = createStack({ "sqrt", "(", "16", ")", "*", "abs", "(", "-5", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)*abs(-5)"));
+
+    myStack = createStack({ "ln", "(", "2.71828", ")", "/", "2" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(2.71828)/2"));
+
+    // Nested trigonometric functions with arithmetic operations
+    myStack = createStack({ "sin", "(", "cos", "(", "30", ")", ")", "+", "tan", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(cos(30))+tan(log(100))"));
+
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")", "-", "ln", "(", "sqrt", "(", "49", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))-ln(sqrt(49))"));
+
+    // Trigonometric functions with complex arithmetic expressions
+    myStack = createStack({ "sin", "(", "45", "*", "log", "(", "10", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(45*log(10))"));
+
+    myStack = createStack({ "cos", "(", "30", "/", "2", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(30/2)"));
+
+    myStack = createStack({ "tan", "(", "60", "+", "15", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60+15)"));
+
+    myStack = createStack({ "sqrt", "(", "16", "-", "4", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16-4)"));
+
+    myStack = createStack({ "abs", "(", "-10", "*", "2", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10*2)"));
+
+    // Edge cases
+    myStack = createStack({ "sin", "(", "sin", "(", "30", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(sin(30))"));
+
+    myStack = createStack({ "cos", "(", "cos", "(", "45", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("cos(cos(45))"));
+
+    myStack = createStack({ "tan", "(", "tan", "(", "60", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(tan(60))"));
+
+    myStack = createStack({ "log", "(", "log", "(", "100", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("log(log(100))"));
+
+    myStack = createStack({ "ln", "(", "ln", "(", "2.71828", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("ln(ln(2.71828))"));
+
+    myStack = createStack({ "sqrt", "(", "sqrt", "(", "16", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(sqrt(16))"));
+
+    myStack = createStack({ "abs", "(", "abs", "(", "-10", ")", ")" });
+    EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(abs(-10))"));
 }
+
+
+
+
+string stackToString(std::stack<std::string> s) {
+    std::ostringstream oss;
+    while (!s.empty()) {
+        oss << s.top() << " ";
+        s.pop();
+    }
+    std::string result = oss.str();
+    if (!result.empty()) {
+        result.pop_back();  // Remove the trailing space
+    }
+    return result;
+}
+
+
 
 
 /*
@@ -152,6 +350,14 @@ Format:
 	expectedStack = ReverseStack(createStack({expected}));
 	actualStack = ReverseStack(createStack({actual}));
 	EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+@notes:
+    -EXPECT_EQ(shuntingYard(expectedStack), actualStack) << "actual stack " << stackToString(actualStack) << endl << "expected stack " << stackToString(expectedStack);
+        This is how you go about error printing to see expected and actual. Cant just call testPrint since its a void that returns nothing.
+        stackToString had to be made since it returns a string, which is printable using cout.
+    -*******The way EXPECT_EQ compares stacks is by popping and comparing top elements. Loading stacks using ({}) loads the stack from
+        left to right, bottom to top. BASICALLY RIGHT SIDE OF ({}) STACK IS THE TOP.
 */
 TEST(shuntingYardTest, validInput)
 {
@@ -188,12 +394,12 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "7", "-", "5", "+", "2" }));//
+    expectedStack = ReverseStack(createStack({ "7", "-", "5", "+", "2" }));
     actualStack = ReverseStack(createStack({ "7", "5", "-", "2", "+" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "8", "+", "(", "3", "*", "2", ")", "-", "4" }));//
+    expectedStack = ReverseStack(createStack({ "8", "+", "(", "3", "*", "2", ")", "-", "4" }));
     actualStack = ReverseStack(createStack({ "8", "3", "2", "*", "+", "4", "-" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
@@ -217,6 +423,65 @@ TEST(shuntingYardTest, validInput)
     actualStack = ReverseStack(createStack({ "-3.5", "-2.1", "-4.2", "*", "2", "/", "+" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "2", "+", "3", ")" }));
+    actualStack = ReverseStack(createStack({ "2", "3", "+", "sin" }));
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "cos", "(", "90", ")" }));
+    actualStack = createStack({ "cos", "90" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "tan", "(", "30", ")" }));
+    actualStack = createStack({ "tan", "30" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "log", "(", "100", ")" }));
+    actualStack = createStack({ "log", "100" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "ln", "(", "2", ")" }));
+    actualStack = createStack({ "ln", "2" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sqrt", "(", "4", ")" }));
+    actualStack = createStack({ "sqrt", "4" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", ")" }));
+    actualStack = createStack({ "abs", "-5" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "30", ")", ")" }));
+    actualStack = createStack({ "sin", "cos", "30" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "tan", "(", "45", "*", "log", "(", "10", ")", ")" }));
+    actualStack = createStack({ "tan", "*", "log", "10", "45" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", "-", "3", ")" }));
+    actualStack = createStack({ "abs", "-", "3", "-5" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sin", "(", "cos", "(", "tan", "(", "30", ")", ")", ")" }));
+    actualStack = createStack({ "sin", "cos", "tan", "30" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
+
+
+    expectedStack = ReverseStack(createStack({ "sqrt", "(", "abs", "(", "-5", "+", "3", ")", ")" }));
+    actualStack = createStack({ "sqrt", "abs", "+", "3", "-5" });
+    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 }
 
 
@@ -225,22 +490,80 @@ TEST(shuntingYardTest, validInput)
 Format: EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("equation"))), answer);
         EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize(""))), );
 */
-TEST(evaluateEquationTest, validInput)
+TEST(evaluateEquationTest, validRadInput)
 {
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2"))), 3.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6"))), 11.167);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9"))), 135.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2"))), 13.7);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7"))), 1.714);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)"))), -7.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7"))), -4.214);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42"))), 42.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2"))), 1.5);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6"))), 19.0);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))"))), 4);
-    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))"))), -4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2")), 0), 3.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6")), 0), 11.167);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9")), 0), 135.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2")), 0), 13.7);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7")), 0), 1.714);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)")), 0), -7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7")), 0), -4.214);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42")), 0), 42.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2")), 0), 1.5);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6")), 0), 19.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))")), 0), 4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))")), 0), -4);
+
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)")), 0), -0.988);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)")), 0), 0.525);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)")), 0), 0.320);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)")), 0), 2.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)")), 0), 1.000);
+
+    // Test cases for nested trigonometric functions
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))")), 0), 0.154);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))")), 0), -2.185);
+
+    // Edge cases
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)")), 0), 0.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)")), 0), 0.894);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)")), 0), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)")), 0), -0.598);
+
+    // Mixed trigonometric and arithmetic operations
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)")), 0), 1.376);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)")), 0), -12.811);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)")), 0), -1.976);
 }
 
+
+TEST(evaluateEquationTest, validDegInput)
+{
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("1+2")), 1), 3.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("3*4-5/6")), 1), 11.167);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("(7+8)*9")), 1), 135.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("10.5+3.2")), 1), 13.7);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7")), 1), 1.714);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-(3+4)")), 1), -7.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7")), 1), -4.214);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("42")), 1), 42.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("-.5+2")), 1), 1.5);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("((2+3)*5)-6")), 1), 19.0);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(4-5))")), 1), 4);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("2*(3+(-5))")), 1), -4);
+
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(30)")), 1), .500);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(45)")), 1), 0.707);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(60)")), 1), 1.732);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("log(100)")), 1), 2.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("ln(2.718)")), 1), 1.000);
+
+    // Test cases for nested trigonometric functions
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(cos(30))")), 1), 0.015);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(log(100))")), 1), 0.035);
+
+    // Edge cases
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(0)")), 1), 0.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(90)")), 1), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(0)")), 1), 1.000);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("cos(180)")), 1), -1.000);
+
+    // Mixed trigonometric and arithmetic operations
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(45)+cos(45)")), 1), 1.414);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("tan(30)*log(100)")), 1), 1.155);
+    EXPECT_EQ(evaluateEquation(shuntingYard(Tokenize("sin(60)/cos(30)")), 1), 1.000);
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

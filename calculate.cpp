@@ -82,7 +82,7 @@ bool isOperator(char Token)
 	-
 */
 bool isFunction(const string& str) {
-	static const unordered_set<string> functions = { "sin()", "cos()", "tan()", "log()", "ln()", "sqrt()", "abs()" };
+	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
 
 	if (functions.find(str) != functions.end()) {
 		return true;
@@ -132,13 +132,14 @@ stack<string> ReverseStack(stack<string> tokenStack)
 	-Returns true if equation is valid, prints error message and returns false if equation is invalid.
 
 @notes:
-	-
+	-*****put here a list of allowed operands and operators and then all of the things that are checked in the validate input function.*****
 */
 bool validateInput(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
 	bool expectOperator = false;
 	bool allowUnary = true;
 	bool hasDecimal = false;
+	string Token;
 	size_t i = 0;
 
 	if (input.empty())
@@ -264,6 +265,41 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
+
+
+		//handles trig functions. 
+		else if (isalpha(ch)) 
+		{
+			while (i < input.length() && isalpha(input[i])) //First load all letters of the trig function into the token.
+			{
+				Token += input[i];
+				i++;
+			}
+
+			if (isFunction(Token))//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, return false.
+			{
+				if (i >= input.length() || input[i] != '(') 
+				{
+					cout << "Error: Invalid use of function " << Token << ". Please try again." << endl;
+					return false;
+				}
+
+				Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
+				i++;
+				expectOperator = false;
+				allowUnary = true;
+			}
+			
+			
+			else 
+			{
+				cout << "Error: Invalid character detected. Please try again." << endl;
+				return false;
+			}
+
+			Token.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+		}
+
 		else
 		{
 			cout << "Error: Invalid character. Please try again." << endl;
@@ -271,14 +307,15 @@ bool validateInput(const string& input) {
 		}
 	}
 
+
 	if (!Parentheses.empty())
 	{
 		cout << "Error: Unbalanced parentheses. Please try again." << endl;
 		return false;
 	}
 
-	// Input is valid if all parentheses are balanced and we end expecting an operator
-	return true;
+	
+	return true;// Input is valid if all parentheses are balanced and we end expecting an operator
 }
 
 
@@ -301,6 +338,7 @@ bool validateInput(const string& input) {
 @example:
 	-(3+4) -> ["-", "(", "3", "+", "4", ")"]
 	-.5+1 -> ["-0.5", "+", "1"]
+	12.345, parse 345 and add it to 12. to form the full 12.345
 */
 stack<string>Tokenize(const string& Equation)
 {
@@ -311,26 +349,37 @@ stack<string>Tokenize(const string& Equation)
 
 	while (i < Equation.length())
 	{
-		//check for decimal point and operand. 
-		if (isdigit(Equation[i]) || Equation[i] == '.')
+	//check for decimal point and operand. 
+		if (isdigit(Equation[i]) || Equation[i] == '.' || isalpha(Equation[i]))
 		{
 			Token.clear();
 
-			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+		//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
 			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 			{
 				Token += '0';
 			}
 
-			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
-			//EX: 12.345, parse 345 and add it to 12. to form the full 12.345
-				//IF SOMETHING GOES WRONG IN TESTING P2, LOOK HERE FIRST.
+		//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
 			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 			{
 				Token += Equation[i];
 				i++;
 			}
+			
+		//If trig function detected, append all letters to the token and push it to the token stack.
+			if (isalpha(Equation[i]))
+			{
+				while (i < Equation.length() && isalpha(Equation[i]))
+				{
+					Token += Equation[i];
+					i++;
+				}
 
+				tokenStack.push(Token);
+				continue;
+			}
+				
 			tokenStack.push(Token);
 		}
 
@@ -431,7 +480,6 @@ int Precedence(const string& Token)
 }
 
 
-
 /*
 @purpose:
 	-Convert user inputted equation from infix to postfix notation.
@@ -457,11 +505,18 @@ stack<string> shuntingYard(stack<string> tokenStack)
 	{
 		Token = tokenStack.top();
 		tokenStack.pop();
+		
+
 
 		//If current token is a positive or negative operand, push to postfix stack.
-		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])))
+		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) )
 		{
 			postFixStack.push(Token);
+		}
+		
+		else if (isFunction(Token)) 
+		{
+			operatorStack.push(Token);
 		}
 
 		//If current token is an "(", push to operator stack.
@@ -470,17 +525,27 @@ stack<string> shuntingYard(stack<string> tokenStack)
 			operatorStack.push(Token);
 		}
 
-		//If current token is an ")", pop until matching "(" is found. Once found, pop "(" then continue.
-		else if (Token == ")")
+		
+
+	//If current token is an ")", pop until matching "(" is found. Once found, pop "(" then continue.
+		else if (Token == ")") 
 		{
-			while (operatorStack.top() != "(")
+			while (operatorStack.top() != "(") 
 			{
 				postFixStack.push(operatorStack.top());
 				operatorStack.pop();
 			}
+			operatorStack.pop(); // Pop the "("
 
-			operatorStack.pop();
+
+		// If there is a function on top of the operator stack, pop it to postfix stack. This helps to eval use of multiple trig/log functions in one equation.
+			if (!operatorStack.empty() && isFunction(operatorStack.top())) 
+			{
+				postFixStack.push(operatorStack.top());
+				operatorStack.pop();
+			}
 		}
+
 
 		//If reach here, token is an operator. Pop the operator stack and push to postfix stack until an operator with higher precedence is found.
 		else
@@ -502,15 +567,23 @@ stack<string> shuntingYard(stack<string> tokenStack)
 		operatorStack.pop();
 	}
 
+
+
+
 	//Final post fix equation is currently reversed, reverse and return it.
 	return ReverseStack(postFixStack);
+	//return postFixStack;
 }
-
-
 
 /*
 @purpose:
-	-Perform an operation on two operands.
+	-Performs calculations:
+		-Arithmetic (addition, subtraction, multiplication, division, modulo, and exponentiation)
+		-Trigonometric (sin, cos, tan)
+		-Logarithmic (log and ln)
+		-Radical (sqrt)
+		-Piecewise (abs)
+	-Able to calculate trigonometric functions in degrees or radians based on user input (DegOrRad).
 
 @param:
 	-string& Token: Operator of precedence to be checked.
@@ -523,10 +596,12 @@ stack<string> shuntingYard(stack<string> tokenStack)
 @notes:
 	-This was created to make the Calculator function more readable.
 	-The return 0.0 will NEVER be reached due to guard clauses in the validate input function but it was still included as good practice.
+	-By default sin, cos, tan, log, ln, sqrt, and abs are in radians but user input is in degrees.
+	-Bool DegOrRad -> degrees = 1
+					  radians = 0
 */
-double performCalculation(const string& Token, double Operand1, double Operand2)
+double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad)
 {
-
 	if (Token == "+") return Operand1 + Operand2;
 
 	else if (Token == "-") return Operand1 - Operand2;
@@ -538,6 +613,20 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 	else if (Token == "%") return fmod(Operand1, Operand2);
 
 	else if (Token == "^") return pow(Operand1, Operand2);
+
+	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
+
+	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
+
+	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
+
+	else if (Token == "log") return log10(Operand1);
+
+	else if (Token == "ln") return log(Operand1);
+
+	else if (Token == "sqrt") return sqrt(Operand1);
+
+	else if (Token == "abs") return fabs(Operand1);
 
 	return 0.0;
 }
@@ -557,13 +646,17 @@ double performCalculation(const string& Token, double Operand1, double Operand2)
 @notes:
 	-stod = String to double.
 */
-double evaluateEquation(stack<string> postFixStack)
+double evaluateEquation(stack<string> postFixStack, bool DegOrRad)
 {
 	stack<double> evalStack;
 	string Token;
+	double functionOperand = 0.0;
 	double Operand1 = 0.0;
 	double Operand2 = 0.0;
 	double Result = 0.0;
+
+
+	
 
 	//Start eval iterating through the post fix stack by first poping off the top of the stack.
 	while (!postFixStack.empty())
@@ -576,6 +669,15 @@ double evaluateEquation(stack<string> postFixStack)
 		{
 			evalStack.push(stod(Token));
 		}
+
+		else if (isFunction(Token)) 
+		{
+			functionOperand = evalStack.top();
+			evalStack.pop();
+			Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
+			evalStack.push(Result);
+		}
+
 
 		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
 		else
@@ -590,13 +692,14 @@ double evaluateEquation(stack<string> postFixStack)
 
 			else
 			{
-				Operand1 = evalStack.top(); evalStack.pop();
-				Result = performCalculation(Token, Operand1, Operand2);
+				Operand1 = evalStack.top(); 
+				evalStack.pop();
+				Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
 				evalStack.push(Result);
 			}
 		}
 	}
-
+	
 	Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
 
 	return Result;

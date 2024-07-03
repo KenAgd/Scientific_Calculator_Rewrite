@@ -42,6 +42,33 @@
 			-In line comments should be kept brief and shouldn't need the use of comment blocks. If the comment isn't in line with the code its describing, put it right above the line of code with one
 				less indentation than the code.
 			-One comment can be used to describe multiple lines of code IF the multiple lines of code all work towards achieving one goal.
+
+	-Upon mid completion reflection/evaluation, I could have used a combination of queues and stacks to solve the problem.
+		-A queue could've been used in validate and tokenize and a stack would be used in shunting yard and evaluating the equation. If I were to follow this approach, when passing the queue tokenize output
+			to stack shunting yard, I would just push the front of the queue into the stack and then pop the queue.
+		-EX:
+			    queue<string> tokenQueue;
+				tokenQueue.push("3");
+				tokenQueue.push("+");
+				tokenQueue.push("4");
+				tokenQueue.push("*");
+				tokenQueue.push("2");
+
+				// Create a stack and transfer elements from the queue to the stack
+				stack<string> tokenStack;
+				while (!tokenQueue.empty()) 
+				{
+					tokenStack.push(tokenQueue.front());
+					tokenQueue.pop();
+				}
+
+		-Stacks are basically a standard linked list while a queue is a circular linked list. Both have a time complexity of O(1) for push/enqueue, pop/dequeue, front/peek, and IsEmpty.
+		-Stacks are LIFO and queues are FIFO. For stacks, the equation would be read from bottom to top while for queues, the equation would be read from left to right. 
+		-At the beginning of the project I chose to just use stacks for everything for the sake of consistency and reduce the need for converting between stacks and queues, HOWEVER,
+			it would have been a good learning opportunity to learn and use queues. 
+
+		-For trig functions in shunting yard and evaluating the equation, they dont have operator precedence because they aren't operators. Thus, they are treated as operands.
+
 */
 #include <iostream>
 #include <string>
@@ -96,16 +123,20 @@ bool Restart()
 	-getline is used over cin because cin doesn't accept spaces.
 		example: 1 + 1 in cin would just be 1
 				 1+1 in cin would be 1+1
+	-bool degrees = 1
+		  radians = 0
 */
 int main()
 {
 	string Equation;
+	bool DegOrRad = 0; //By default calculate in radian mode.
 	stack<string>tokenizedStack;
 	stack<string>postFixStack;
 	double Result = 0.0;
 	
+	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "If you want to use negative numbers, use the '~' character." << endl << "Dont use spaces between numbers or operators." << endl << "If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'." << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
@@ -113,14 +144,27 @@ int main()
 
 		if (Equation == "exit" || Equation == "quit" || Equation == "Exit" || Equation == "Quit") break;
 
+		if (Equation == "rad" || Equation == "Rad")
+		{
+			DegOrRad = 0;
+			cout << "Switched to Radian mode." << endl;
+			continue;
+		}
+
+		if (Equation == "deg" || Equation == "Deg")
+		{
+			DegOrRad = 1;
+			cout << "Switched to Degrees mode." << endl;
+			continue;
+		}
+
 		if (!validateInput(Equation)) continue;
 
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
 			postFixStack = shuntingYard(tokenizedStack);
-
-			Result = evaluateEquation(postFixStack);
+			Result = evaluateEquation(postFixStack, DegOrRad);
 			cout << "Result: " << Result << endl;
 		}
 

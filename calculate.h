@@ -15,10 +15,14 @@ void testPrint(stack<string> Stack);
 bool isOperator(char Token);
 bool isFunction(const string& str);
 stack<string> ReverseStack(stack<string> tokenStack);
+int Precedence(const string& Token);
+double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad);
+
+
 
 //Main Functions
 bool validateInput(const string& input);
 stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
-double evaluateEquation(stack<string> postFixStack);
+double evaluateEquation(stack<string> postFixStack, bool DegOrRad);
 #endif
