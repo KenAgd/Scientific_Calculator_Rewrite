@@ -75,6 +75,8 @@
 #include <unordered_set>
 #include <stack>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 #include "Calculate.h"
 using namespace std;
 
@@ -136,7 +138,8 @@ int main()
 	
 	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'." << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead" << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Allowed operators and functions: + - * / ^ % sin cos tan log ln sqrt abs" << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
@@ -164,8 +167,18 @@ int main()
 		{
 			tokenizedStack = Tokenize(Equation);
 			postFixStack = shuntingYard(tokenizedStack);
-			Result = evaluateEquation(postFixStack, DegOrRad);
-			cout << "Result: " << Result << endl;
+			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
+
+			if (abs(Result) > 1e99 || ((abs(Result < 1e-6) && Result != 0.0)))//Convert to scientific notation if final result is too large.
+			{
+				stringstream ss;
+				ss << scientific << setprecision(4) << Result;
+				ss >> Result;
+			}
+
+			double RoundedResult = round(Result * 1000) / 1000;//round to 3 decimal places.
+
+			cout << "Result: " << setprecision(4) << RoundedResult << endl; 
 		}
 
 

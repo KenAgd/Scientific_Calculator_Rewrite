@@ -24,5 +24,5 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 bool validateInput(const string& input);
 stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
-double evaluateEquation(stack<string> postFixStack, bool DegOrRad);
+void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double& Result);
 #endif

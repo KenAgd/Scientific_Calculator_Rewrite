@@ -12,6 +12,8 @@
 #include <unordered_set>
 #include <stack>
 #include <algorithm>
+#include <sstream> 
+#include <iomanip> 
 #include "calculate.h"
 using namespace std;
 
@@ -165,7 +167,7 @@ bool validateInput(const string& input) {
 		}
 
 		// Handle numbers, operators, and parentheses. In this context, ch is the current character and input[i] is the next character.
-		if (isdigit(ch) || ch == '.')
+		if (isdigit(ch) || ch == '.' || ch == 'e')
 		{
 			hasDecimal = false;
 
@@ -266,7 +268,6 @@ bool validateInput(const string& input) {
 		}
 
 
-
 		//handles trig functions. 
 		else if (isalpha(ch)) 
 		{
@@ -276,7 +277,7 @@ bool validateInput(const string& input) {
 				i++;
 			}
 
-			if (isFunction(Token))//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, return false.
+			if (isFunction(Token))//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
 			{
 				if (i >= input.length() || input[i] != '(') 
 				{
@@ -386,7 +387,7 @@ stack<string>Tokenize(const string& Equation)
 		//Handles determining the context of "-" and checking if its unary or subtraction.
 		else if (Equation[i] == '-') {
 			// Check to see if '-' is at the start or follows an open parenthesis or another operator
-			if (i == 0 || Equation[i - 1] == '(' || Equation[i - 1] == '+' || Equation[i - 1] == '-' || Equation[i - 1] == '*' || Equation[i - 1] == '/' || Equation[i - 1] == '^' || Equation[i - 1] == '%')
+			if (i == 0 || Equation[i - 1] == '(' || isOperator(Equation[i - 1]))
 			{
 				Token = "-";
 				i++;
@@ -646,14 +647,14 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 @notes:
 	-stod = String to double.
 */
-double evaluateEquation(stack<string> postFixStack, bool DegOrRad)
+void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 {
 	stack<double> evalStack;
 	string Token;
 	double functionOperand = 0.0;
 	double Operand1 = 0.0;
 	double Operand2 = 0.0;
-	double Result = 0.0;
+	Result = 0.0;
 
 
 	
@@ -700,7 +701,18 @@ double evaluateEquation(stack<string> postFixStack, bool DegOrRad)
 		}
 	}
 	
+
+	/*
+	if (abs(Result) > 1e99 || ((abs(Result < 1e-6) && Result != 0.0)))//Convert to scientific notation if final result is too large.
+	{
+		stringstream ss;
+		ss  << scientific << setprecision(4) << Result;
+		ss >> Result;
+	}
+
 	Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
 
-	return Result;
+	cout << "Result: " << setprecision(4) <<Result << endl;*/
+
+	//return Result;
 }
