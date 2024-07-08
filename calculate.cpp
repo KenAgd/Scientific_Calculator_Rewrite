@@ -134,7 +134,14 @@ stack<string> ReverseStack(stack<string> tokenStack)
 	-Returns true if equation is valid, prints error message and returns false if equation is invalid.
 
 @notes:
-	-*****put here a list of allowed operands and operators and then all of the things that are checked in the validate input function.*****
+	-This function checks for:
+		-Empty input.
+		-Use of whitespace.
+		-Proper usage of decimal point, operators, and functions.
+		-Balanced parentheses.
+		-Division by 0.
+		-Detects minus vs unary minus.
+	-In this context, ch is the current character and input[i] is the next character.
 */
 bool validateInput(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
@@ -166,8 +173,8 @@ bool validateInput(const string& input) {
 			return false;
 		}
 
-		// Handle numbers, operators, and parentheses. In this context, ch is the current character and input[i] is the next character.
-		if (isdigit(ch) || ch == '.' || ch == 'e')
+		
+		else if (isdigit(ch) || ch == '.')// Handle decimal points. 
 		{
 			hasDecimal = false;
 
@@ -268,6 +275,46 @@ bool validateInput(const string& input) {
 		}
 
 
+		// Check for Euler's number 'e'
+		else if (ch == 'e')
+		{
+			// Check if 'e' is followed by an invalid character.
+			if (i + 1 < input.length() && !isdigit(input[i + 1]) && !isOperator(input[i + 1]) && input[i + 1] != '.')
+			{
+				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+				return false;
+			}
+
+			//Check if 'e' is preceded by a number or mulitple 'e''s.
+			else if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == 'e'))
+			{
+				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+				return false;
+			}
+
+			//Check if 'e' is followed by a number.
+			else if (i + 1 < input.length() && isdigit(input[i + 1]))
+			{
+				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+				return false;
+			}
+
+			//Check if 'e' is followed by any letter.
+			else if (i + 1 < input.length() && isalpha(input[i + 1]))
+			{
+				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+				return false;
+			}
+
+			i++;
+			expectOperator = true;
+			allowUnary = false;
+		}
+
+
+
+
+
 		//handles trig functions. 
 		else if (isalpha(ch)) 
 		{
@@ -281,7 +328,7 @@ bool validateInput(const string& input) {
 			{
 				if (i >= input.length() || input[i] != '(') 
 				{
-					cout << "Error: Invalid use of function " << Token << ". Please try again." << endl;
+					cout << "Error: Invalid use of function. Please try again." << endl;
 					return false;
 				}
 

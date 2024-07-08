@@ -166,20 +166,11 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			//testPrint(tokenizedStack);
-			postFixStack = shuntingYard(tokenizedStack);
+			testPrint(tokenizedStack);
+			//postFixStack = shuntingYard(tokenizedStack);
 			//testPrint(postFixStack);
-			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
-			/*
-			if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))//Convert to scientific notation if final result is larger than 10^10 or smaller than 10^-4.
-			{
-				stringstream ss;
-				ss << scientific << setprecision(4) << Result;
-				ss >> RoundedResult;
-			}
-			else RoundedResult = round(Result * 1000) / 1000;//round to 3 decimal places.
-			*/
-			cout << "Result: "  << Result << endl;
+			//evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
+			//cout << "Result: "  << Result << endl;
 		}
 
 
