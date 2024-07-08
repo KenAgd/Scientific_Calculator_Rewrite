@@ -604,31 +604,18 @@ stack<string> shuntingYard(stack<string> tokenStack)
 double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad)
 {
 	if (Token == "+") return Operand1 + Operand2;
-
 	else if (Token == "-") return Operand1 - Operand2;
-
 	else if (Token == "*") return Operand1 * Operand2;
-
 	else if (Token == "/") return Operand1 / Operand2;
-
 	else if (Token == "%") return fmod(Operand1, Operand2);
-
 	else if (Token == "^") return pow(Operand1, Operand2);
-
 	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
-
 	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
-
 	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
-
 	else if (Token == "log") return log10(Operand1);
-
 	else if (Token == "ln") return log(Operand1);
-
 	else if (Token == "sqrt") return sqrt(Operand1);
-
 	else if (Token == "abs") return fabs(Operand1);
-
 	return 0.0;
 }
 
@@ -642,10 +629,11 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	-stack<string> postFixStack: User inputted equation in postfix notation.
 
 @return:
-	-Returns a double of the result of the postfix equation to the main function to be printed.
+	-Returns a double of the result of the postfix equation to the main function via pass by reference to be printed.
 
 @notes:
 	-stod = String to double.
+	-Originally, conversion to
 */
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 {
@@ -700,19 +688,14 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 			}
 		}
 	}
-	
 
-	/*
-	if (abs(Result) > 1e99 || ((abs(Result < 1e-6) && Result != 0.0)))//Convert to scientific notation if final result is too large.
+
+	
+	if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))//Convert to scientific notation if final result is larger than 10^10 or smaller than 10^-4.
 	{
 		stringstream ss;
-		ss  << scientific << setprecision(4) << Result;
+		ss << scientific << setprecision(3) << evalStack.top();
 		ss >> Result;
 	}
-
-	Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
-
-	cout << "Result: " << setprecision(4) <<Result << endl;*/
-
-	//return Result;
+	else Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
 }

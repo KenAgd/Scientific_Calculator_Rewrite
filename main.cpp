@@ -135,7 +135,7 @@ int main()
 	stack<string>tokenizedStack;
 	stack<string>postFixStack;
 	double Result = 0.0;
-	
+	double RoundedResult = 0.0;
 	
 
 	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead" << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
@@ -166,19 +166,20 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
+			//testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
+			//testPrint(postFixStack);
 			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
-
-			if (abs(Result) > 1e99 || ((abs(Result < 1e-6) && Result != 0.0)))//Convert to scientific notation if final result is too large.
+			/*
+			if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))//Convert to scientific notation if final result is larger than 10^10 or smaller than 10^-4.
 			{
 				stringstream ss;
 				ss << scientific << setprecision(4) << Result;
-				ss >> Result;
+				ss >> RoundedResult;
 			}
-
-			double RoundedResult = round(Result * 1000) / 1000;//round to 3 decimal places.
-
-			cout << "Result: " << setprecision(4) << RoundedResult << endl; 
+			else RoundedResult = round(Result * 1000) / 1000;//round to 3 decimal places.
+			*/
+			cout << "Result: "  << Result << endl;
 		}
 
 
