@@ -375,6 +375,7 @@ bool validateInput(const string& input) {
 	-Tokenization is useful for breaking down strings of text into invidual components (tokens) as opposed to individual characters.
 		EX: "Hello, World!" -> ["Hello", ",", "World", "!"]
 	-size_t used for i counter variable. Its apparently good practice to use size_t instead of int for counters.
+	-string() used to convert int to string. Its not like type casting in C, its a "constructor" where the first parameter determines how many times to repeat the second parameter.
 
 @example:
 	-(3+4) -> ["-", "(", "3", "+", "4", ")"]
@@ -395,11 +396,13 @@ stack<string>Tokenize(const string& Equation)
 		{
 			Token.clear();
 
+
 			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
 			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 			{
 				Token += '0';
 			}
+
 
 			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
 			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
@@ -407,6 +410,7 @@ stack<string>Tokenize(const string& Equation)
 				Token += Equation[i];
 				i++;
 			}
+
 			
 			//If trig function detected, append all letters to the token and push it to the token stack.
 			if (isalpha(Equation[i]))
@@ -428,22 +432,24 @@ stack<string>Tokenize(const string& Equation)
 		else if (Equation[i] == '-') 
 		{
 			// Check to see if '-' is at the start or follows an open parenthesis or another operator
-			if (i == 0 || Equation[i - 1] == '(' || isOperator(Equation[i - 1]))
+			//Decimal point or ( check (also covers -sin(30))
+			if (i == 0 || ( i < Equation.length() && (Equation[i - 1] == '(' || isOperator(Equation[i - 1]) || isalpha(Equation[i - 1]))))
 			{
 				Token = "-";
 				i++;
 
+
 				// If the next character is a digit or a decimal point, it is a negative number. Push '-' and the rest of the number to the stack
-				if (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+				if (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.' ))
 				{
 					hasDecimal = false;
-
+/*ive deemed this to be repeatitive BUT keep it around until the final final unit test is created and all tests pass. If all pass, this code can be removed.
 					//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
 					if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 					{
 						Token += '0';
 					}
-
+*/
 					while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 					{
 						if (Equation[i] == '.' && hasDecimal)
@@ -463,6 +469,7 @@ stack<string>Tokenize(const string& Equation)
 					tokenStack.push(Token);
 				}
 
+
 				// If the next character is '(', it's a unary operator for an expression
 				else if (i < Equation.length() && Equation[i] == '(')
 				{
@@ -470,25 +477,35 @@ stack<string>Tokenize(const string& Equation)
 					tokenStack.push("(");
 					i++;
 				}
+
+
+				else//Otherwise, its a negative trig function or Eulers number.
+				{
+					while (i < Equation.length() && isalpha(Equation[i]))
+					{
+						Token += Equation[i];
+						i++;
+					}
+
+					tokenStack.push(Token);
+				}
 			}
 
-			else
+
+			else//Otherwise, it is subtraction. Push only '-' to the stack
 			{
-				// Otherwise, it is subtraction. Push only '-' to the stack
-				tokenStack.push(std::string(1, Equation[i]));
+				
+				tokenStack.push(string(1, Equation[i]));
 				i++;
 			}
 		}
 
-		//if current character is an operator or parenthesis, add them to the Token Stack.
-		else if (Equation[i] == '+' || Equation[i] == '-' || Equation[i] == '*' || Equation[i] == '/' || Equation[i] == '^' || Equation[i] == '%' || Equation[i] == '(' || Equation[i] == ')')
+
+		else//if current character is an operator or parenthesis, add them to the Token Stack.
 		{
 			tokenStack.push(string(1, Equation[i]));
 			i++;
 		}
-
-		//skip whitespace.
-		else i++;
 	}
 
 	//Final post fix equation is currently reversed, reverse it and return it.
