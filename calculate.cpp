@@ -81,15 +81,18 @@ bool isOperator(char Token)
 	-Returns false if the token is not a trig function.
 
 @notes:
-	-
+	-I chose to use unordered_set instead of unordered_map because unordered_set automatically assigns a key to each value whereas unordered_map does not.
+		Both use hashing functions and both have the same time complexity (O(1)), unordered_set just saves me time and lines.
 */
 bool isFunction(const string& str) {
 	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
 
-	if (functions.find(str) != functions.end()) {
+	if (functions.find(str) != functions.end()) 
+	{
 		return true;
 	}
-	else {
+	else 
+	{
 		return false;
 	}
 }
@@ -137,7 +140,7 @@ stack<string> ReverseStack(stack<string> tokenStack)
 	-This function checks for:
 		-Empty input.
 		-Use of whitespace.
-		-Proper usage of decimal point, operators, and functions.
+		-Proper usage of decimal point, operators, Eulers number, and functions.
 		-Balanced parentheses.
 		-Division by 0.
 		-Detects minus vs unary minus.
@@ -148,7 +151,7 @@ bool validateInput(const string& input) {
 	bool expectOperator = false;
 	bool allowUnary = true;
 	bool hasDecimal = false;
-	string Token;
+	string FunctionToken;
 	size_t i = 0;
 
 	if (input.empty())
@@ -162,6 +165,7 @@ bool validateInput(const string& input) {
 		cout << "Error: Single operator detected. Please try again." << endl;
 		return false;
 	}
+
 
 	while (i < input.length())
 	{
@@ -208,6 +212,7 @@ bool validateInput(const string& input) {
 			allowUnary = false;
 		}
 
+
 		// Handle operators
 		else if (isOperator(ch))
 		{
@@ -252,6 +257,7 @@ bool validateInput(const string& input) {
 			i++;
 		}
 
+
 		else if (ch == '(')
 		{
 			Parentheses.push(ch);
@@ -259,6 +265,7 @@ bool validateInput(const string& input) {
 			allowUnary = true;
 			i++;
 		}
+
 
 		else if (ch == ')')
 		{
@@ -275,32 +282,25 @@ bool validateInput(const string& input) {
 		}
 
 
-		// Check for Euler's number 'e'
-		else if (ch == 'e')
+		// Check for Euler's number 'e'.
+		else if (ch == 'e') 
 		{
-			// Check if 'e' is followed by an invalid character.
-			if (i + 1 < input.length() && !isdigit(input[i + 1]) && !isOperator(input[i + 1]) && input[i + 1] != '.')
+			// Check if 'e' is preceded by a digit or decimal point.
+			if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == '.')) 
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
 			}
 
-			//Check if 'e' is preceded by a number or mulitple 'e''s.
-			else if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == 'e'))
+			// Check if 'e' is followed by a digit or decimal point.
+			if (i + 1 < input.length() && (isdigit(input[i + 1]) || input[i + 1] == '.')) 
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
 			}
 
-			//Check if 'e' is followed by a number.
-			else if (i + 1 < input.length() && isdigit(input[i + 1]))
-			{
-				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
-				return false;
-			}
-
-			//Check if 'e' is followed by any letter.
-			else if (i + 1 < input.length() && isalpha(input[i + 1]))
+			// Check if 'e' is followed by any letter.
+			if (i + 1 < input.length() && isalpha(input[i + 1])) 
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
@@ -312,19 +312,18 @@ bool validateInput(const string& input) {
 		}
 
 
-
-
-
 		//handles trig functions. 
 		else if (isalpha(ch)) 
 		{
-			while (i < input.length() && isalpha(input[i])) //First load all letters of the trig function into the token.
+			//First load all letters of the trig function into the token.
+			while (i < input.length() && isalpha(input[i]))
 			{
-				Token += input[i];
+				FunctionToken += input[i];
 				i++;
 			}
 
-			if (isFunction(Token))//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
+			//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
+			if (isFunction(FunctionToken))
 			{
 				if (i >= input.length() || input[i] != '(') 
 				{
@@ -337,16 +336,10 @@ bool validateInput(const string& input) {
 				expectOperator = false;
 				allowUnary = true;
 			}
-			
-			
-			else 
-			{
-				cout << "Error: Invalid character detected. Please try again." << endl;
-				return false;
-			}
 
-			Token.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+			FunctionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
 		}
+
 
 		else
 		{
@@ -380,7 +373,7 @@ bool validateInput(const string& input) {
 
 @notes:
 	-Tokenization is useful for breaking down strings of text into invidual components (tokens) as opposed to individual characters.
-		-EX: "Hello, World!" -> ["Hello", ",", "World", "!"]
+		EX: "Hello, World!" -> ["Hello", ",", "World", "!"]
 	-size_t used for i counter variable. Its apparently good practice to use size_t instead of int for counters.
 
 @example:
@@ -397,25 +390,25 @@ stack<string>Tokenize(const string& Equation)
 
 	while (i < Equation.length())
 	{
-	//check for decimal point and operand. 
+		//check for decimal point and operand. 
 		if (isdigit(Equation[i]) || Equation[i] == '.' || isalpha(Equation[i]))
 		{
 			Token.clear();
 
-		//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
 			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 			{
 				Token += '0';
 			}
 
-		//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
+			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
 			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 			{
 				Token += Equation[i];
 				i++;
 			}
 			
-		//If trig function detected, append all letters to the token and push it to the token stack.
+			//If trig function detected, append all letters to the token and push it to the token stack.
 			if (isalpha(Equation[i]))
 			{
 				while (i < Equation.length() && isalpha(Equation[i]))
@@ -432,7 +425,8 @@ stack<string>Tokenize(const string& Equation)
 		}
 
 		//Handles determining the context of "-" and checking if its unary or subtraction.
-		else if (Equation[i] == '-') {
+		else if (Equation[i] == '-') 
+		{
 			// Check to see if '-' is at the start or follows an open parenthesis or another operator
 			if (i == 0 || Equation[i - 1] == '(' || isOperator(Equation[i - 1]))
 			{
@@ -487,7 +481,7 @@ stack<string>Tokenize(const string& Equation)
 		}
 
 		//if current character is an operator or parenthesis, add them to the Token Stack.
-		else if (Equation[i] == '+' || Equation[i] == '-' || Equation[i] == '*' || Equation[i] == '/' || Equation[i] == '%' || Equation[i] == '^' || Equation[i] == '(' || Equation[i] == ')')
+		else if (Equation[i] == '+' || Equation[i] == '-' || Equation[i] == '*' || Equation[i] == '/' || Equation[i] == '^' || Equation[i] == '%' || Equation[i] == '(' || Equation[i] == ')')
 		{
 			tokenStack.push(string(1, Equation[i]));
 			i++;
