@@ -224,7 +224,7 @@ bool validateInput(const string& input) {
 
 			if (expectOperator == false)
 			{
-				cout << "Error: Operator detected at the beginning of the expression (except unary minus). Please try again." << endl;
+				cout << "Error: Invalid operator usage. Please try again." << endl;
 				return false;
 			}
 
@@ -236,7 +236,7 @@ bool validateInput(const string& input) {
 
 			if (isOperator(input.back()) || input.back() == '.')
 			{
-				cout << "Error: Operator detected at the end of the expression. Please try again." << endl;
+				cout << "Error: Invalid operator usage. Please try again." << endl;
 				return false;
 			}
 
@@ -382,37 +382,27 @@ bool validateInput(const string& input) {
 	-.5+1 -> ["-0.5", "+", "1"]
 	12.345, parse 345 and add it to 12. to form the full 12.345
 */
-stack<string>Tokenize(const string& Equation)
+stack<string> Tokenize(const string& Equation)
 {
-	stack<string>tokenStack;
+	stack<string> tokenStack;
 	string Token;
 	size_t i = 0;
 	bool hasDecimal = false;
 
 	while (i < Equation.length())
 	{
-		//check for decimal point and operand. 
+		//Handle numbers, decimal numbers, and functions.
 		if (isdigit(Equation[i]) || Equation[i] == '.' || isalpha(Equation[i]))
 		{
 			Token.clear();
-
-
-			//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
+			
+			//If a decimal that is preceded by a number is detected, add a 0 to the front. EX: .5 -> 0.5
 			if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
 			{
 				Token += '0';
 			}
 
-
-			//If "." detected, append all numbers to the right of the decimal point to the left of the decimal point to form the whole decimal number.
-			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
-			{
-				Token += Equation[i];
-				i++;
-			}
-
-			
-			//If trig function detected, append all letters to the token and push it to the token stack.
+			//Handles parsing the full function name and adding it to the stack.
 			if (isalpha(Equation[i]))
 			{
 				while (i < Equation.length() && isalpha(Equation[i]))
@@ -420,98 +410,84 @@ stack<string>Tokenize(const string& Equation)
 					Token += Equation[i];
 					i++;
 				}
-
-				tokenStack.push(Token);
-				continue;
 			}
-				
+
+			//Handles parsing numbers and adding it to the stack. 
+			//If a decimal is detected, append all numbers to the right of the decimal to the left of the decimal to form the whole decimal number. See @example.
+			else
+			{
+				while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+				{
+					if (Equation[i] == '.' && hasDecimal)
+					{
+						break;
+					}
+					if (Equation[i] == '.')
+					{
+						hasDecimal = true;
+					}
+					Token += Equation[i];
+					i++;
+				}
+			}
+
 			tokenStack.push(Token);
+			hasDecimal = false;
 		}
 
-		//Handles determining the context of "-" and checking if its unary or subtraction.
-		else if (Equation[i] == '-') 
+		//Determine context of '-'. Is it unary or bianry minus.
+		else if (Equation[i] == '-')
 		{
-			// Check to see if '-' is at the start or follows an open parenthesis or another operator
-			//Decimal point or ( check (also covers -sin(30))
-			if (i == 0 || ( i < Equation.length() && (Equation[i - 1] == '(' || isOperator(Equation[i - 1]) || isalpha(Equation[i - 1]))))
+			//Check if it's a binary minus by checking if '-' follows a number, a closing parenthesis, or an 'e'.
+			if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == ')' || Equation[i - 1] == 'e'))
+			{
+				tokenStack.push("-");
+				i++;
+			}
+			else//Unary minus
 			{
 				Token = "-";
 				i++;
 
-
-				// If the next character is a digit or a decimal point, it is a negative number. Push '-' and the rest of the number to the stack
-				if (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.' ))
+				//Handles negative numbers. Check if unary minus is followed by a number.
+				if (i < Equation.length() && isdigit(Equation[i]))
 				{
-					hasDecimal = false;
-/*ive deemed this to be repeatitive BUT keep it around until the final final unit test is created and all tests pass. If all pass, this code can be removed.
-					//Check if decimal has a digit before it. If no, add a '0'. EX: .5 -> 0.5
-					if (Equation[i] == '.' && (i == 0 || !isdigit(Equation[i - 1])))
-					{
-						Token += '0';
-					}
-*/
 					while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 					{
-						if (Equation[i] == '.' && hasDecimal)
-						{
-							break;
-						}
-
-						if (Equation[i] == '.')
-						{
-							hasDecimal = true;
-						}
-
 						Token += Equation[i];
 						i++;
 					}
-
 					tokenStack.push(Token);
 				}
 
-
-				// If the next character is '(', it's a unary operator for an expression
-				else if (i < Equation.length() && Equation[i] == '(')
-				{
-					tokenStack.push("-");
-					tokenStack.push("(");
-					i++;
-				}
-
-
-				else//Otherwise, its a negative trig function or Eulers number.
+				//Handles negative functions. Check if unary minus is followed by a function.
+				else if (i < Equation.length() && isalpha(Equation[i]))
 				{
 					while (i < Equation.length() && isalpha(Equation[i]))
 					{
 						Token += Equation[i];
 						i++;
 					}
-
 					tokenStack.push(Token);
 				}
-			}
-
-
-			else//Otherwise, it is subtraction. Push only '-' to the stack
-			{
 				
-				tokenStack.push(string(1, Equation[i]));
-				i++;
+				
+				else//Standalone unary minus, such as in front of a parenthesis.
+				{
+					tokenStack.push("-");
+				}
 			}
 		}
 
-
-		else//if current character is an operator or parenthesis, add them to the Token Stack.
+		else//Other operators and parentheses
 		{
 			tokenStack.push(string(1, Equation[i]));
 			i++;
 		}
 	}
 
-	//Final post fix equation is currently reversed, reverse it and return it.
 	return ReverseStack(tokenStack);
 }
-
 
 
 /*

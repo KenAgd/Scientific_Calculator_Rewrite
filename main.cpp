@@ -25,13 +25,18 @@
 	-The reason why this project took so long was because I had to basically rewrite the entire program. I copy pasted toooo much code from codeium and ChatGPT to the point where the code broke and became messy
 		and unreadable. I also added the feature of being able to use trigonometric functions.
 
-	-Shunting Yard algorithm HAS to be used for calculator programs in order to make evaluating larger more complex equations easier. It can handle:
+	-Shunting Yard algorithm HAS to be used for calculator programs in order to make evaluating larger more complex equations easier. This calculator can handle:
 		-Operator precedence and associativity (PEMDAS)
 		-Parentheses.
 		-Exponents.
 		-Decimal points.
 		-Negative (unary) numbers.
-		-Trigonometric functions.
+		-Trigonometric functions (only sin, cos, tan)
+		-Logarithmic functions (only log and ln)
+		-Radical functions (only sqrt)
+		-Piecewise functions (only abs)
+		-Eulers number 'e'
+		                   *****NOTE: for the sake of simplicity, trig, log, radical, piecewise, and eulers number will all fall under the term "functions"*****
 
 	-Coding conventions:
 		Naming conventions:
@@ -68,7 +73,7 @@
 			it would have been a good learning opportunity to learn and use queues. 
 
 		-For trig functions in shunting yard and evaluating the equation, they dont have operator precedence because they aren't operators. Thus, they are treated as operands.
-
+		-Binary minus is referred to in Tokenize. Binary minus means normal subtraction while unary minus means negative number.
 */
 #include <iostream>
 #include <string>
