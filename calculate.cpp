@@ -615,6 +615,8 @@ stack<string> shuntingYard(stack<string> tokenStack)
 	return ReverseStack(postFixStack);
 }
 
+
+
 /*
 @purpose:
 	-Performs calculations:
@@ -684,8 +686,6 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 	Result = 0.0;
 
 
-	
-
 	//Start eval iterating through the post fix stack by first poping off the top of the stack.
 	while (!postFixStack.empty())
 	{
@@ -697,6 +697,10 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		{
 			evalStack.push(stod(Token));
 		}
+
+
+		else if (Token[0] == 'e' ||  Token == "-e") Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);
+
 
 		else if (isFunction(Token)) 
 		{
