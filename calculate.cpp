@@ -517,8 +517,11 @@ int Precedence(const string& Token)
 
 /*
 @purpose:
-	-Convert user inputted equation from infix to postfix notation.
-		-EX: 1+2*3 -> 1 2 3 * +
+	-Convert user inputted equation from infix to postfix notation. This is achieved by rearranging operators to follow their operands
+		while preserving precedence and associativity of the original equation. Converting to postfix is crucial for
+		these types of calculators because it simplifies the eval/calculation process, especially when dealing
+		with longer and/or complex equations involving different operators with different precedences.
+
 @param:
 	-stack<string> tokenStack: User inputted equation in infix notation.
 
@@ -526,9 +529,12 @@ int Precedence(const string& Token)
 	-Returns the equation in postfix notation in a stack, ready to be fed directly into the postfix evaluation / calculator function.
 
 @notes:
-	- top = look at the top of the stack.
-	- pop = remove the top of the stack.
-	- push = add an element to the top of the stack.
+	-top = look at the top of the stack.
+	-pop = remove the top of the stack.
+	-push = add an element to the top of the stack.
+
+@example:
+	-1+2*3 = 1 2 3 * +
 */
 stack<string> shuntingYard(stack<string> tokenStack)
 {
@@ -542,17 +548,18 @@ stack<string> shuntingYard(stack<string> tokenStack)
 		tokenStack.pop();
 		
 
-
-		//If current token is a positive or negative operand, push to postfix stack.
-		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) )
+		//If current token is a positive or negative operand (including Eulers number), push to postfix stack.
+		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) || Token[0] == 'e' || (Token.length() > 1 && Token[0] == '-' && Token[1] == 'e'))
 		{
 			postFixStack.push(Token);
 		}
 		
+
 		else if (isFunction(Token)) 
 		{
 			operatorStack.push(Token);
 		}
+
 
 		//If current token is an "(", push to operator stack.
 		else if (Token == "(")
@@ -595,6 +602,7 @@ stack<string> shuntingYard(stack<string> tokenStack)
 		}
 	}
 
+
 	//IF there are operators left in the operator stack, push them to the postfix stack.
 	while (!operatorStack.empty())
 	{
@@ -603,11 +611,8 @@ stack<string> shuntingYard(stack<string> tokenStack)
 	}
 
 
-
-
 	//Final post fix equation is currently reversed, reverse and return it.
 	return ReverseStack(postFixStack);
-	//return postFixStack;
 }
 
 /*

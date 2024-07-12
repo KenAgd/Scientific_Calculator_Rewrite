@@ -74,6 +74,8 @@
 
 		-For trig functions in shunting yard and evaluating the equation, they dont have operator precedence because they aren't operators. Thus, they are treated as operands.
 		-Binary minus is referred to in Tokenize. Binary minus means normal subtraction while unary minus means negative number.
+		-OneNote flow charts dont include how to handle switching bewteen calculating in degrees or radians, converting to scientific notation, or eulers number. This are 
+			functionalities that I added on top of the project. The flow charts only cover the basic functionality of the calculator.
 */
 #include <iostream>
 #include <string>
@@ -171,7 +173,7 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			//testPrint(tokenizedStack);
+			testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
 			testPrint(postFixStack);
 			//evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
