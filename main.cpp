@@ -25,13 +25,18 @@
 	-The reason why this project took so long was because I had to basically rewrite the entire program. I copy pasted toooo much code from codeium and ChatGPT to the point where the code broke and became messy
 		and unreadable. I also added the feature of being able to use trigonometric functions.
 
-	-Shunting Yard algorithm HAS to be used for calculator programs in order to make evaluating larger more complex equations easier. It can handle:
+	-Shunting Yard algorithm HAS to be used for calculator programs in order to make evaluating larger more complex equations easier. This calculator can handle:
 		-Operator precedence and associativity (PEMDAS)
 		-Parentheses.
 		-Exponents.
 		-Decimal points.
 		-Negative (unary) numbers.
-		-Trigonometric functions.
+		-Trigonometric functions (only sin, cos, tan)
+		-Logarithmic functions (only log and ln)
+		-Radical functions (only sqrt)
+		-Piecewise functions (only abs)
+		-Eulers number 'e'
+		                   *****NOTE: for the sake of simplicity, trig, log, radical, piecewise, and eulers number will all fall under the term "functions"*****
 
 	-Coding conventions:
 		Naming conventions:
@@ -68,13 +73,17 @@
 			it would have been a good learning opportunity to learn and use queues. 
 
 		-For trig functions in shunting yard and evaluating the equation, they dont have operator precedence because they aren't operators. Thus, they are treated as operands.
-
+		-Binary minus is referred to in Tokenize. Binary minus means normal subtraction while unary minus means negative number.
+		-OneNote flow charts dont include how to handle switching bewteen calculating in degrees or radians, converting to scientific notation, or eulers number. This are 
+			functionalities that I added on top of the project. The flow charts only cover the basic functionality of the calculator.
 */
 #include <iostream>
 #include <string>
 #include <unordered_set>
 #include <stack>
 #include <algorithm>
+#include <sstream>
+#include <iomanip>
 #include "Calculate.h"
 using namespace std;
 
@@ -133,10 +142,11 @@ int main()
 	stack<string>tokenizedStack;
 	stack<string>postFixStack;
 	double Result = 0.0;
-	
+	double RoundedResult = 0.0;
 	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'." << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead" << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Allowed operators and functions: + - * / ^ % sin cos tan log ln sqrt abs" << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
@@ -163,9 +173,11 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
+			testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
-			Result = evaluateEquation(postFixStack, DegOrRad);
-			cout << "Result: " << Result << endl;
+			testPrint(postFixStack);
+			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
+			cout << "Result: "  << Result << endl;
 		}
 
 
