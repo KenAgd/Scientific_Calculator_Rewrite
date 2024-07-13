@@ -145,6 +145,8 @@ stack<string> ReverseStack(stack<string> tokenStack)
 		-Division by 0.
 		-Detects minus vs unary minus.
 	-In this context, ch is the current character and input[i] is the next character.
+	-This function could be refactored and compacted to be a lot smaller if I just used throw error function instead of error printing
+		each error and of what type BUT I want the user to know what exactly is invalid about their input.
 */
 bool validateInput(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
@@ -171,14 +173,15 @@ bool validateInput(const string& input) {
 	{
 		char ch = input[i];
 
+		//Handle whitespace.
 		if (isspace(ch))
 		{
 			cout << "Error: Whitespace detected. Please try again." << endl;
 			return false;
 		}
 
-		
-		else if (isdigit(ch) || ch == '.')// Handle decimal points. 
+		//Handle decimal points.
+		else if (isdigit(ch) || ch == '.') 
 		{
 			hasDecimal = false;
 
@@ -213,7 +216,7 @@ bool validateInput(const string& input) {
 		}
 
 
-		// Handle operators
+		//Handle operators
 		else if (isOperator(ch))
 		{
 			if (ch == '-' && allowUnary)
@@ -258,6 +261,7 @@ bool validateInput(const string& input) {
 		}
 
 
+		//Handle open parentheses
 		else if (ch == '(')
 		{
 			Parentheses.push(ch);
@@ -267,6 +271,7 @@ bool validateInput(const string& input) {
 		}
 
 
+		//Handle close parentheses
 		else if (ch == ')')
 		{
 			if (Parentheses.empty() || !expectOperator)
@@ -282,7 +287,7 @@ bool validateInput(const string& input) {
 		}
 
 
-		// Check for Euler's number 'e'.
+		//Check for Euler's number 'e'.
 		else if (ch == 'e') 
 		{
 			// Check if 'e' is preceded by a digit or decimal point.
@@ -312,9 +317,10 @@ bool validateInput(const string& input) {
 		}
 
 
-		//handles trig functions. 
-		else if (isalpha(ch)) 
+		//Handles trig functions. 
+		else if (isalpha(ch))
 		{
+			
 			//First load all letters of the trig function into the token.
 			while (i < input.length() && isalpha(input[i]))
 			{
@@ -335,6 +341,13 @@ bool validateInput(const string& input) {
 				i++;
 				expectOperator = false;
 				allowUnary = true;
+			}
+
+
+			else
+			{
+				cout << "Error: Invalid alphabet char detected. Please try again." << endl;
+				return false;
 			}
 
 			FunctionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
@@ -674,7 +687,8 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 
 @notes:
 	-stod = String to double.
-	-Originally, conversion to
+	-Originally, conversion to scientific notation was done in main function but in order to make main function more pretty, it was moved to this function.
+		Nothing is lost in this function in terms of functionality or readability by moving the converion to this function since its only 6 lines.
 */
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 {
