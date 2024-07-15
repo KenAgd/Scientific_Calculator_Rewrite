@@ -222,6 +222,88 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 
 /*
 @purpose:
+
+@param:
+
+@return:
+
+@notes:
+*/
+bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary)
+{
+	// Check if 'e' is preceded by a digit or decimal point.
+	if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == '.'))
+	{
+		cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+		return false;
+	}
+
+	// Check if 'e' is followed by a digit or decimal point.
+	if (i + 1 < Equation.length() && (isdigit(Equation[i + 1]) || Equation[i + 1] == '.'))
+	{
+		cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+		return false;
+	}
+
+	// Check if 'e' is followed by any letter.
+	if (i + 1 < Equation.length() && isalpha(Equation[i + 1]))
+	{
+		cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
+		return false;
+	}
+
+	i++;
+	expectOperator = true;
+	allowUnary = false;
+}
+
+
+
+
+bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
+{
+	string functionToken;
+
+	//First load all letters of the trig function into the token.
+	while (i < Equation.length() && isalpha(Equation[i]))
+	{
+		functionToken += Equation[i];
+		i++;
+	}
+
+	//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
+	if (isFunction(functionToken))
+	{
+		if (i >= Equation.length() || Equation[i] != '(')
+		{
+			cout << "Error: Invalid use of function. Please try again." << endl;
+			return false;
+		}
+
+		Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
+		i++;
+		expectOperator = false;
+		allowUnary = true;
+	}
+
+
+	else
+	{
+		cout << "Error: Invalid alphabet char detected. Please try again." << endl;
+		return false;
+	}
+
+	functionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+}
+
+
+
+
+
+
+
+/*
+@purpose:
 	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
 
 @param:
@@ -247,8 +329,6 @@ bool validateEquation(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
 	bool expectOperator = false;
 	bool allowUnary = true;
-	//bool hasDecimal = false;
-	string FunctionToken;
 	size_t i = 0;
 
 	if (input.empty())
@@ -399,6 +479,8 @@ bool validateEquation(const string& input) {
 		//Check for Euler's number 'e'.
 		else if (ch == 'e')
 		{
+			if (!validateEuler(input, i, expectOperator, allowUnary)) return false;
+			/*
 			// Check if 'e' is preceded by a digit or decimal point.
 			if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == '.'))
 			{
@@ -422,23 +504,25 @@ bool validateEquation(const string& input) {
 
 			i++;
 			expectOperator = true;
-			allowUnary = false;
+			allowUnary = false;*/
 		}
 
 
 		//Handles trig functions. 
 		else if (isalpha(ch))
 		{
+			if (!validateFunctions(input, i, expectOperator, allowUnary, Parentheses)) return false;
 
+			/*
 			//First load all letters of the trig function into the token.
 			while (i < input.length() && isalpha(input[i]))
 			{
-				FunctionToken += input[i];
+				functionToken += input[i];
 				i++;
 			}
 
 			//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
-			if (isFunction(FunctionToken))
+			if (isFunction(functionToken))
 			{
 				if (i >= input.length() || input[i] != '(')
 				{
@@ -459,7 +543,8 @@ bool validateEquation(const string& input) {
 				return false;
 			}
 
-			FunctionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+			functionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
+			*/
 		}
 
 

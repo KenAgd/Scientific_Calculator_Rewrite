@@ -97,6 +97,26 @@ TEST(validateEquationTest, validInput)
     EXPECT_TRUE(validateEquation("tan(45*log(10))"));
     EXPECT_TRUE(validateEquation("abs(-5-3)"));
     EXPECT_TRUE(validateEquation("sin(cos(tan(30)))"));
+
+
+    EXPECT_TRUE(validateEquation("e"));
+    EXPECT_TRUE(validateEquation("e^1"));
+    EXPECT_TRUE(validateEquation("e^0"));
+    EXPECT_TRUE(validateEquation("e^-1"));
+    EXPECT_TRUE(validateEquation("e^.5"));
+    EXPECT_TRUE(validateEquation("e^-0.5"));
+    EXPECT_TRUE(validateEquation("e^e"));
+    EXPECT_TRUE(validateEquation("e+1"));
+    EXPECT_TRUE(validateEquation("e-1"));
+    EXPECT_TRUE(validateEquation("e*2"));
+    EXPECT_TRUE(validateEquation("e/2"));
+    EXPECT_TRUE(validateEquation("2*e"));
+    EXPECT_TRUE(validateEquation("10/e"));
+    EXPECT_TRUE(validateEquation("e^2+e^3"));
+    EXPECT_TRUE(validateEquation("-e^-2--e^-3"));
+    EXPECT_TRUE(validateEquation("e^(1/2)"));
+    EXPECT_TRUE(validateEquation("e^1/2+3"));
+
 }
 
 

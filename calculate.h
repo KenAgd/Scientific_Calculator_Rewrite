@@ -18,6 +18,9 @@ bool isFunction(const string& str);
 
 bool validateDecimalPoint(const string& Equation, size_t& i, const char& ch, bool& expectOperator, bool& allowUnary);
 bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary);
+bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary);
+
+
 
 
 int Precedence(const string& Token);
