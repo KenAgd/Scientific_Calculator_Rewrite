@@ -17,6 +17,21 @@
 #include "calculate.h"
 using namespace std;
 
+
+/*
+@purpose:
+
+@param:
+
+@return:
+
+@notes:
+*/
+
+
+
+
+
 /*
 @purpose:
 	-Prints the stack passed into it.
@@ -38,65 +53,6 @@ void testPrint(stack<string> Stack)
 	}
 	cout << endl;
 }
-
-
-
-/*
-@purpose:
-	-Checks if a character is an operator.
-
-@param:
-	-char Token: Character to be checked.
-
-@return:
-	-Returns true if the character is an operator.
-	-Returns false if the character is not an operator.
-
-@notes:
-	-
-*/
-bool isOperator(char Token)
-{
-	if (Token == '+' || Token == '-' || Token == '*' || Token == '/' || Token == '^' || Token == '%')
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-
-
-/*
-@purpose:
-	-Checks if a Token is a trig function.
-
-@param:
-	-string str: Token to be checked.
-
-@return:
-	-Returns true if the token is a trig function.
-	-Returns false if the token is not a trig function.
-
-@notes:
-	-I chose to use unordered_set instead of unordered_map because unordered_set automatically assigns a key to each value whereas unordered_map does not.
-		Both use hashing functions and both have the same time complexity (O(1)), unordered_set just saves me time and lines.
-*/
-bool isFunction(const string& str) {
-	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
-
-	if (functions.find(str) != functions.end()) 
-	{
-		return true;
-	}
-	else 
-	{
-		return false;
-	}
-}
-
 
 
 /*
@@ -125,6 +81,144 @@ stack<string> ReverseStack(stack<string> tokenStack)
 }
 
 
+/*
+@purpose:
+	-Checks if a character is an operator.
+
+@param:
+	-char Token: Character to be checked.
+
+@return:
+	-Returns true if the character is a valid operator.
+	-Returns false if the character is an invalid operator.
+
+@notes:
+	-
+*/
+bool isOperator(char Token)
+{
+	return (Token == '+' || Token == '-' || Token == '*' || Token == '/' || Token == '^' || Token == '%');
+}
+
+
+
+/*
+@purpose:
+	-Checks if a Token is a trig function.
+
+@param:
+	-string str: Token to be checked.
+
+@return:
+	-Returns true if the token is a trig function.
+	-Returns false if the token is not a trig function.
+
+@notes:
+	-I chose to use unordered_set instead of unordered_map because unordered_set automatically assigns a key to each value whereas unordered_map does not.
+		Both use hashing functions and both have the same time complexity (O(1)), unordered_set just saves me time and lines.
+*/
+bool isFunction(const string& str) {
+	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
+	return functions.find(str) != functions.end();
+}
+
+
+
+/*
+@purpose:
+
+@param:
+
+@return:
+
+@notes:
+*/
+bool validateDecimalPoint(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary)
+{
+	bool hasDecimal = false;
+
+	if (Token == '.')
+	{
+		hasDecimal = true;
+	}
+	i++;
+
+	if (Token == '.' && (i >= Equation.length() || !isdigit(Equation[i])))//Ensures that a decimal is followed by a number.
+	{
+		cout << "Error: Invalid decimal usage." << endl;
+		return false;
+	}
+
+	while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))//Prevent multiple decimals.
+	{
+		if (Equation[i] == '.')
+		{
+			if (hasDecimal)
+			{
+				cout << "Error: Multiple decimal points detected. Please try again." << endl;
+				return false;
+			}
+			hasDecimal = true;
+		}
+		i++;
+	}
+
+	expectOperator = true; // After a number, we expect an operator next but not unary.
+	allowUnary = false;
+	return true;
+}
+
+
+
+/*
+@purpose:
+
+@param:
+
+@return:
+
+@notes:
+*/
+bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary)
+{
+		if (expectOperator == false)
+		{
+			cout << "Error: Invalid operator usage. Please try again." << endl;
+			return false;
+		}
+
+		if (Token == '/' && i + 1 < Equation.length() && Equation[i + 1] == '0')
+		{
+			cout << "Error: Division by zero detected. Please try again." << endl;
+			return false;
+		}
+
+		if (isOperator(Equation.back()) || Equation.back() == '.')
+		{
+			cout << "Error: Invalid operator usage. Please try again." << endl;
+			return false;
+		}
+
+		if (Token == '%')
+		{
+			//Checks that % has an integer in both operands.
+			if (i == 0 || (!isdigit(Equation[i - 1]) && Equation[i - 1] != ')')
+				|| (i + 1 >= Equation.length()
+					|| (!isdigit(Equation[i + 1]) && Equation[i + 1] != '(')))
+			{
+				cout << "Error: Invalid use of modulus operator." << endl;
+				return false;
+			}
+		}
+
+		expectOperator = false;
+		allowUnary = true; // After an operator, unary is allowed
+		i++;
+	
+	return true;
+}
+
+
 
 /*
 @purpose:
@@ -148,11 +242,12 @@ stack<string> ReverseStack(stack<string> tokenStack)
 	-This function could be refactored and compacted to be a lot smaller if I just used throw error function instead of error printing
 		each error and of what type BUT I want the user to know what exactly is invalid about their input.
 */
-bool validateInput(const string& input) {
+
+bool validateEquation(const string& input) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
 	bool expectOperator = false;
 	bool allowUnary = true;
-	bool hasDecimal = false;
+	//bool hasDecimal = false;
 	string FunctionToken;
 	size_t i = 0;
 
@@ -179,11 +274,15 @@ bool validateInput(const string& input) {
 			cout << "Error: Whitespace detected. Please try again." << endl;
 			return false;
 		}
-
+		
 		//Handle decimal points.
-		else if (isdigit(ch) || ch == '.') 
+		else if (isdigit(ch) || ch == '.')
 		{
-			hasDecimal = false;
+			if (!validateDecimalPoint(input, i, ch, expectOperator, allowUnary)) return false;
+
+			
+			
+			/*hasDecimal = false;
 
 			if (ch == '.')
 			{
@@ -212,14 +311,24 @@ bool validateInput(const string& input) {
 			}
 
 			expectOperator = true; // After a number, we expect an operator next but not unary.
-			allowUnary = false;
+			allowUnary = false;*/
 		}
 
 
 		//Handle operators
 		else if (isOperator(ch))
 		{
+			//If current token is '-' and we can expect an unary minus, increment to next token to ensure its a number.
 			if (ch == '-' && allowUnary)
+			{
+				i++;
+				continue;
+			}
+
+			if (!validateOperator(input, i, ch, expectOperator, allowUnary)) return false;
+
+
+			/*if (ch == '-' && allowUnary)
 			{
 				i++;
 				continue;
@@ -257,7 +366,7 @@ bool validateInput(const string& input) {
 
 			expectOperator = false;
 			allowUnary = true; // After an operator, unary is allowed
-			i++;
+			i++;*/
 		}
 
 
@@ -288,24 +397,24 @@ bool validateInput(const string& input) {
 
 
 		//Check for Euler's number 'e'.
-		else if (ch == 'e') 
+		else if (ch == 'e')
 		{
 			// Check if 'e' is preceded by a digit or decimal point.
-			if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == '.')) 
+			if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == '.'))
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
 			}
 
 			// Check if 'e' is followed by a digit or decimal point.
-			if (i + 1 < input.length() && (isdigit(input[i + 1]) || input[i + 1] == '.')) 
+			if (i + 1 < input.length() && (isdigit(input[i + 1]) || input[i + 1] == '.'))
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
 			}
 
 			// Check if 'e' is followed by any letter.
-			if (i + 1 < input.length() && isalpha(input[i + 1])) 
+			if (i + 1 < input.length() && isalpha(input[i + 1]))
 			{
 				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
 				return false;
@@ -320,7 +429,7 @@ bool validateInput(const string& input) {
 		//Handles trig functions. 
 		else if (isalpha(ch))
 		{
-			
+
 			//First load all letters of the trig function into the token.
 			while (i < input.length() && isalpha(input[i]))
 			{
@@ -331,7 +440,7 @@ bool validateInput(const string& input) {
 			//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
 			if (isFunction(FunctionToken))
 			{
-				if (i >= input.length() || input[i] != '(') 
+				if (i >= input.length() || input[i] != '(')
 				{
 					cout << "Error: Invalid use of function. Please try again." << endl;
 					return false;
@@ -368,7 +477,7 @@ bool validateInput(const string& input) {
 		return false;
 	}
 
-	
+
 	return true;// Input is valid if all parentheses are balanced and we end expecting an operator
 }
 

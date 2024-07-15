@@ -12,16 +12,21 @@ using namespace std;
 
 //Auxiliary Functions
 void testPrint(stack<string> Stack);
+stack<string> ReverseStack(stack<string> tokenStack);
 bool isOperator(char Token);
 bool isFunction(const string& str);
-stack<string> ReverseStack(stack<string> tokenStack);
+
+bool validateDecimalPoint(const string& Equation, size_t& i, const char& ch, bool& expectOperator, bool& allowUnary);
+bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary);
+
+
 int Precedence(const string& Token);
 double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad);
 
 
 
 //Main Functions
-bool validateInput(const string& input);
+bool validateEquation(const string& input);
 stack<string> Tokenize(const string& input);
 stack<string> shuntingYard(stack<string> TokenStack);
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double& Result);
