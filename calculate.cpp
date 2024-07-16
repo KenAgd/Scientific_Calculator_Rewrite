@@ -126,30 +126,41 @@ bool isFunction(const string& str) {
 
 /*
 @purpose:
+	-Ensures proper usage of decimal points.
 
 @param:
+	-const string& Equation: User equation input.
+	-size_t& i: Current index of the character in the input.
+	-const char& Token: Current character in the input.
+	-bool& expectOperator: Determine if we expect an operator next.
+	-bool& allowUnary: Determine if we allow unary operators.
 
 @return:
+	-Returns true if the decimal point is valid. If invalid, error print and return false.
 
 @notes:
+	-Aux function to validateEquation.
+	-Checks for multiple decimal points and if a decimal point is followed by a number.
 */
 bool validateDecimalPoint(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary)
 {
 	bool hasDecimal = false;
 
-	if (Token == '.')
-	{
-		hasDecimal = true;
-	}
+	//Keeps track of number of decimals. Prevents multiple decimals.
+	if (Token == '.')hasDecimal = true;
 	i++;
 
-	if (Token == '.' && (i >= Equation.length() || !isdigit(Equation[i])))//Ensures that a decimal is followed by a number.
+
+	//Ensures that a decimal is followed by a number.
+	if (Token == '.' && (i >= Equation.length() || !isdigit(Equation[i])))
 	{
 		cout << "Error: Invalid decimal usage." << endl;
 		return false;
 	}
 
-	while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))//Prevent multiple decimals.
+
+	//Check for multiple decimal points.
+	while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
 	{
 		if (Equation[i] == '.')
 		{
@@ -172,12 +183,22 @@ bool validateDecimalPoint(const string& Equation, size_t& i, const char& Token, 
 
 /*
 @purpose:
+	-Ensures proper usage of operators (+, -, *, /, ^, %).
 
 @param:
+	-const string& Equation: User equation input.
+	-size_t& i: Current index of the character in the input.
+	-const char& Token: Current character in the input.
+	-bool& expectOperator: Determine if we expect an operator next.
+	-bool& allowUnary: Determine if we allow unary operators.
 
 @return:
+	-Returns true if the operator is valid. If invalid, error print and return false.
 
 @notes:
+	-Aux function to validateEquation.
+	-Checks for multiple operators in a row, if an operator is preceded/followed by a number, if theres an operator at the beginning or end of the equation,
+		proper usage of modulo, and division by zero.
 */
 bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary)
 {
@@ -187,18 +208,24 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 			return false;
 		}
 
+
+		//Prevent division by zero.
 		if (Token == '/' && i + 1 < Equation.length() && Equation[i + 1] == '0')
 		{
 			cout << "Error: Division by zero detected. Please try again." << endl;
 			return false;
 		}
 
+
+		//Check for if there is an operator at the beginning or end of the equation.
 		if (isOperator(Equation.back()) || Equation.back() == '.')
 		{
 			cout << "Error: Invalid operator usage. Please try again." << endl;
 			return false;
 		}
 
+
+		//Ensure proper usage of modulo.
 		if (Token == '%')
 		{
 			//Checks that % has an integer in both operands.
@@ -222,12 +249,20 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 
 /*
 @purpose:
+	-Ensures proper usage of Euler's number 'e'.
 
 @param:
+	-const string& Equation: User equation input.
+	-size_t& i: Current index of the character in the input.
+	-bool& expectOperator: Determine if we expect an operator next.
+	-bool& allowUnary: Determine if we allow unary operators.
 
 @return:
+	-Returns true if Eulers number is valid. If invalid, error print and return false.
 
 @notes:
+	-Aux function to validateEquation.
+	-Checks if 'e' is preceded by a digit or decimal point, if 'e' is followed by a digit or decimal point, if 'e' is followed by any letter.
 */
 bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary)
 {
@@ -253,13 +288,31 @@ bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool
 	}
 
 	i++;
-	expectOperator = true;
+	expectOperator = true;//After 'e', we can expect an operator.
 	allowUnary = false;
+	return true;
 }
 
 
 
+/*
+@purpose:
+	-Checks for proper use of "functions" (trig, log, radical, and algebraic).
 
+@param:
+	-const string& Equation: User equation input.
+	-size_t& i: Current index of the character in the input.
+	-bool& expectOperator: Determine if we expect an operator next.
+	-bool& allowUnary: Determine if we allow unary operators.
+	-stack<char>& Parentheses: Stack of parentheses, used to check for balanced parentheses.
+
+@return:
+	-Returns true if function is valid. If invalid, error print and return false.
+
+@notes:
+	-Aux function to validateEquation.
+	-Checks if the token is a valid trig function and for balanced parentheses.
+*/
 bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
 {
 	string functionToken;
@@ -298,10 +351,6 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 
 
 
-
-
-
-
 /*
 @purpose:
 	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
@@ -337,6 +386,8 @@ bool validateEquation(const string& input) {
 		return false;
 	}
 
+
+	//Prevents single operator inputs.
 	if (input.length() == 1 && isOperator(input[0]))
 	{
 		cout << "Error: Single operator detected. Please try again." << endl;
@@ -355,43 +406,11 @@ bool validateEquation(const string& input) {
 			return false;
 		}
 		
+
 		//Handle decimal points.
 		else if (isdigit(ch) || ch == '.')
 		{
 			if (!validateDecimalPoint(input, i, ch, expectOperator, allowUnary)) return false;
-
-			
-			
-			/*hasDecimal = false;
-
-			if (ch == '.')
-			{
-				hasDecimal = true;
-			}
-			i++;
-
-			if (ch == '.' && (i >= input.length() || !isdigit(input[i])))//Ensures that a decimal is followed by a number.
-			{
-				cout << "Error: Invalid decimal usage." << endl;
-				return false;
-			}
-
-			while (i < input.length() && (isdigit(input[i]) || input[i] == '.'))//Prevent multiple decimals.
-			{
-				if (input[i] == '.')
-				{
-					if (hasDecimal)
-					{
-						cout << "Error: Multiple decimal points detected. Please try again." << endl;
-						return false;
-					}
-					hasDecimal = true;
-				}
-				i++;
-			}
-
-			expectOperator = true; // After a number, we expect an operator next but not unary.
-			allowUnary = false;*/
 		}
 
 
@@ -406,47 +425,6 @@ bool validateEquation(const string& input) {
 			}
 
 			if (!validateOperator(input, i, ch, expectOperator, allowUnary)) return false;
-
-
-			/*if (ch == '-' && allowUnary)
-			{
-				i++;
-				continue;
-			}
-
-			if (expectOperator == false)
-			{
-				cout << "Error: Invalid operator usage. Please try again." << endl;
-				return false;
-			}
-
-			if (ch == '/' && i + 1 < input.length() && input[i + 1] == '0')
-			{
-				cout << "Error: Division by zero detected. Please try again." << endl;
-				return false;
-			}
-
-			if (isOperator(input.back()) || input.back() == '.')
-			{
-				cout << "Error: Invalid operator usage. Please try again." << endl;
-				return false;
-			}
-
-			if (ch == '%')
-			{
-				//Checks that % has an integer in both operands.
-				if (i == 0 || (!isdigit(input[i - 1]) && input[i - 1] != ')')
-					|| (i + 1 >= input.length()
-						|| (!isdigit(input[i + 1]) && input[i + 1] != '(')))
-				{
-					cout << "Error: Invalid use of modulus operator." << endl;
-					return false;
-				}
-			}
-
-			expectOperator = false;
-			allowUnary = true; // After an operator, unary is allowed
-			i++;*/
 		}
 
 
@@ -480,31 +458,6 @@ bool validateEquation(const string& input) {
 		else if (ch == 'e')
 		{
 			if (!validateEuler(input, i, expectOperator, allowUnary)) return false;
-			/*
-			// Check if 'e' is preceded by a digit or decimal point.
-			if (i > 0 && (isdigit(input[i - 1]) || input[i - 1] == '.'))
-			{
-				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
-				return false;
-			}
-
-			// Check if 'e' is followed by a digit or decimal point.
-			if (i + 1 < input.length() && (isdigit(input[i + 1]) || input[i + 1] == '.'))
-			{
-				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
-				return false;
-			}
-
-			// Check if 'e' is followed by any letter.
-			if (i + 1 < input.length() && isalpha(input[i + 1]))
-			{
-				cout << "Error: Invalid use of Euler's number 'e'. Please try again." << endl;
-				return false;
-			}
-
-			i++;
-			expectOperator = true;
-			allowUnary = false;*/
 		}
 
 
@@ -512,39 +465,6 @@ bool validateEquation(const string& input) {
 		else if (isalpha(ch))
 		{
 			if (!validateFunctions(input, i, expectOperator, allowUnary, Parentheses)) return false;
-
-			/*
-			//First load all letters of the trig function into the token.
-			while (i < input.length() && isalpha(input[i]))
-			{
-				functionToken += input[i];
-				i++;
-			}
-
-			//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
-			if (isFunction(functionToken))
-			{
-				if (i >= input.length() || input[i] != '(')
-				{
-					cout << "Error: Invalid use of function. Please try again." << endl;
-					return false;
-				}
-
-				Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
-				i++;
-				expectOperator = false;
-				allowUnary = true;
-			}
-
-
-			else
-			{
-				cout << "Error: Invalid alphabet char detected. Please try again." << endl;
-				return false;
-			}
-
-			functionToken.clear();//This is necessary for checking for multiple uses of trig functions or nested trig functions.
-			*/
 		}
 
 

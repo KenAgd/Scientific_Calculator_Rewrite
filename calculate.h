@@ -15,14 +15,10 @@ void testPrint(stack<string> Stack);
 stack<string> ReverseStack(stack<string> tokenStack);
 bool isOperator(char Token);
 bool isFunction(const string& str);
-
 bool validateDecimalPoint(const string& Equation, size_t& i, const char& ch, bool& expectOperator, bool& allowUnary);
 bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary);
 bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary);
-
-
-
-
+bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses);
 int Precedence(const string& Token);
 double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad);
 
