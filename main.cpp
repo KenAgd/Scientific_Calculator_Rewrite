@@ -168,7 +168,7 @@ int main()
 			continue;
 		}
 
-		if (!validateInput(Equation)) continue;
+		if (!validateEquation(Equation)) continue;
 
 		else
 		{
