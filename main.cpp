@@ -168,16 +168,16 @@ int main()
 			continue;
 		}
 
-		if (!validateInput(Equation)) continue;
+		if (!validateEquation(Equation)) continue;
 
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
 			testPrint(tokenizedStack);
-			//postFixStack = shuntingYard(tokenizedStack);
-			//testPrint(postFixStack);
-			//evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
-			//cout << "Result: "  << Result << endl;
+			postFixStack = shuntingYard(tokenizedStack);
+			testPrint(postFixStack);
+			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
+			cout << "Result: "  << Result << endl;
 		}
 
 
