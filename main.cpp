@@ -145,7 +145,7 @@ int main()
 	double RoundedResult = 0.0;
 	
 
-	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead" << endl << "*If you want to exit, type 'exit' or 'quit'." << endl;
+	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead"<< endl << "*Encapsulate exponents in parentheses. EX: 2^(1+2)" << endl << "*To exit, type 'exit' or 'quit'." << endl;
 	cout << "Allowed operators and functions: + - * / ^ % sin cos tan log ln sqrt abs" << endl;
 	while (true)
 	{
@@ -174,10 +174,10 @@ int main()
 		{
 			tokenizedStack = Tokenize(Equation);
 			testPrint(tokenizedStack);
-			//postFixStack = shuntingYard(tokenizedStack);
-			//testPrint(postFixStack);
-			//evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
-			//cout << "Result: "  << Result << endl;
+			postFixStack = shuntingYard(tokenizedStack);
+			testPrint(postFixStack);
+			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
+			cout << "Result: "  << Result << endl;
 		}
 
 

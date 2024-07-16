@@ -24,9 +24,9 @@ TEST(validateInputTest, validInput)
     EXPECT_TRUE(validateInput("3*4-5/6"));
     EXPECT_TRUE(validateInput("(7+8)*9"));
     EXPECT_TRUE(validateInput("10.5+3.2"));
-    EXPECT_TRUE(validateInput("2^3-4*(5+6)/7"));
+    EXPECT_TRUE(validateInput("2^(3)-4*(5+6)/7"));
     EXPECT_TRUE(validateInput("-(3+4)"));
-    EXPECT_TRUE(validateInput("2+(3*(4/5)^6)-7"));
+    EXPECT_TRUE(validateInput("2+(3*(4/5)^(6))-7"));
     EXPECT_TRUE(validateInput("42"));
     EXPECT_TRUE(validateInput("-.5+2"));
     EXPECT_TRUE(validateInput("((2+3)*5)-6"));
@@ -35,7 +35,7 @@ TEST(validateInputTest, validInput)
     EXPECT_TRUE(validateInput("12%5+1"));
     EXPECT_TRUE(validateInput("10%3-1"));
     EXPECT_TRUE(validateInput("3+4%2"));
-    EXPECT_TRUE(validateInput("2^2%10"));
+    EXPECT_TRUE(validateInput("2^(2)%10"));
     EXPECT_TRUE(validateInput("(2+3)%2"));
     EXPECT_TRUE(validateInput("-5+3"));        
     EXPECT_TRUE(validateInput("2*(-4)"));      
@@ -581,6 +581,8 @@ TEST(evaluateEquationTest, validRadInput)
 TEST(evaluateEquationTest, validDegInput)
 {
     double Result = 0.0;
+    //In evaluateEquation, Result is being passed by reference meaning that Result in this TEST case will be updated to reflect the result of the passed in equation.
+
 
     evaluateEquation(shuntingYard(Tokenize("1+2")), 1, Result);
     EXPECT_EQ(Result, 3.0);
@@ -594,13 +596,13 @@ TEST(evaluateEquationTest, validDegInput)
     evaluateEquation(shuntingYard(Tokenize("10.5+3.2")), 1, Result);
     EXPECT_EQ(Result, 13.7);
 
-    evaluateEquation(shuntingYard(Tokenize("2^3-4*(5+6)/7")), 1, Result);
+    evaluateEquation(shuntingYard(Tokenize("2^(3)-4*(5+6)/7")), 1, Result);
     EXPECT_EQ(Result, 1.714);
 
     evaluateEquation(shuntingYard(Tokenize("-(3+4)")), 1, Result);
     EXPECT_EQ(Result, -7.0);
 
-    evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^6)-7")), 1, Result);
+    evaluateEquation(shuntingYard(Tokenize("2+(3*(4/5)^(6))-7")), 1, Result);
     EXPECT_EQ(Result, -4.214);
 
     evaluateEquation(shuntingYard(Tokenize("42")), 1, Result);
