@@ -5,7 +5,13 @@
 @purpose:
 	-This is the main driver of the Scientific Calculator. It contains all the functions that are used to evaluate the equation.
 
+@purpose:
 
+@param:
+
+@return:
+
+@notes:
 */
 #include <iostream>
 #include <string>
@@ -16,19 +22,6 @@
 #include <iomanip> 
 #include "calculate.h"
 using namespace std;
-
-
-/*
-@purpose:
-
-@param:
-
-@return:
-
-@notes:
-*/
-
-
 
 
 
@@ -238,12 +231,122 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 			}
 		}
 
+
+		if (Token == '^')
+		{
+
+		}
+
+
+
 		expectOperator = false;
 		allowUnary = true; // After an operator, unary is allowed
 		i++;
 	
 	return true;
 }
+
+
+
+
+
+/*
+whats allowed:
+Before:
+	-an operator, another '(', or the start of the equation
+
+After:
+	-an operator, another ')', the end of the equation
+
+
+
+
+whats not allowed:
+Before open parenthesis: DONE
+	-prevent digits before '('
+		ex: 3(3+4) 
+	-prevent decimal point before '(' (covererd by validateDecimalPoint)
+		ex:.(3+4)
+
+After close parenthesis: 
+	-prevent digits after ')'
+		ex:(3+4)3
+	-prevent '(' right after ')'
+		ex:(3+4)(3+4)
+	-prevent decimal point after ')'
+		ex:(3+4).
+	-prevent function right after ')' (covered in validateFunction)
+		ex:(3+4)sin(30)
+
+
+@purpose:
+	-Ensures proper usage and balancing of parentheses.
+
+@param:
+	-const string& Equation: User equation input.
+	-size_t& i: Current index of the character in the input.
+	-const char& Token: Current character in the input.
+	-bool& expectOperator: Determine if we expect an operator next.
+	-bool& allowUnary: Determine if we allow unary operators.
+	-stack<char>& Parentheses: Parentheses stack.
+
+@return:
+	-Returns true if the parenthesis are valid. If invalid, error print and return false.
+
+@notes:
+
+*/
+bool validateParentheses(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
+{
+	if (Token == '(')
+	{
+		//Prevent digits before '('.
+		if (i > 0 && isdigit(Equation[i - 1]))
+		{
+			cout << "Error: Juxtaposition multiplication detected. Please try again." << endl;
+			return false;
+		}
+
+		else
+		{
+			Parentheses.push(Token);
+			expectOperator = false; // After '(', we do not expect an operator but allow unary.
+			allowUnary = true;
+			i++;
+		}
+	}
+
+
+	else if (Token == ')')
+	{	
+		//Handle parenthesis balancing.
+		if (Parentheses.empty() || !expectOperator)
+		{
+			cout << "Error: Unbalanced parentheses. Please try again." << endl;
+			return false; // Invalid if no matching '(' or unexpected ')'
+		}
+
+		//Prevent a number, decimal point, or '(' from following a ')'.
+		else if (i + 1 < Equation.length() && (isdigit(Equation[i + 1]) || Equation[i + 1] == '.' || Equation[i + 1] == '('))
+		{
+			cout << "Error: Juxtaposition multiplication detected. Please try again." << endl;
+			return false;
+		}
+
+		else
+		{
+			Parentheses.pop();
+			expectOperator = true; // After ')', we expect an operator but not unary
+			allowUnary = false;
+			i++;
+		}
+	}
+}
+
+
+
+
+
 
 
 
@@ -311,11 +414,13 @@ bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool
 
 @notes:
 	-Aux function to validateEquation.
-	-Checks if the token is a valid trig function and for balanced parentheses.
+	-Checks if the token is a valid trig function, for balanced parentheses, and for juxtiposition multiplication.
+	.sin(30) and sin(30). (or similar type inputs) are handled either by validateDecimalPoint or validateParentheses.
 */
 bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
 {
 	string functionToken;
+	size_t initialPosition = i;
 
 	//First load all letters of the trig function into the token.
 	while (i < Equation.length() && isalpha(Equation[i]))
@@ -324,14 +429,24 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 		i++;
 	}
 
-	//Check if the token is a valid trig function. If its valid BUT a ( doesn't follow it, error print and return false.
+	//Check if the token is a valid trig function.
 	if (isFunction(functionToken))
 	{
+		//Prevent juxtiposition multiplication. Ex: (3+4)sin(30) or 30sin(30).
+		if (initialPosition > 0 && (isdigit(Equation[initialPosition - 1]) || Equation[initialPosition - 1] == ')'))
+		{
+			cout << "Error: Juxtaposition multiplication detected. Please try again." << endl;
+			return false;
+		}
+
+
+		//Ensure that a '(' follows the function.
 		if (i >= Equation.length() || Equation[i] != '(')
 		{
 			cout << "Error: Invalid use of function. Please try again." << endl;
 			return false;
 		}
+
 
 		Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
 		i++;
@@ -428,6 +543,14 @@ bool validateEquation(const string& input) {
 		}
 
 
+
+		else if (ch == '(' || ch == ')')
+		{
+			if (!validateParentheses(input, i, ch, expectOperator, allowUnary, Parentheses)) return false;
+		}
+
+
+		/*
 		//Handle open parentheses
 		else if (ch == '(')
 		{
@@ -451,7 +574,7 @@ bool validateEquation(const string& input) {
 			expectOperator = true; // After ')', we expect an operator but not unary
 			allowUnary = false;
 			i++;
-		}
+		}*/
 
 
 		//Check for Euler's number 'e'.

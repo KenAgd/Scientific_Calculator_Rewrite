@@ -17,6 +17,7 @@ bool isOperator(char Token);
 bool isFunction(const string& str);
 bool validateDecimalPoint(const string& Equation, size_t& i, const char& ch, bool& expectOperator, bool& allowUnary);
 bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary);
+bool validateParentheses(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses);
 bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary);
 bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses);
 int Precedence(const string& Token);
