@@ -26,8 +26,8 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 
 
 //Main Functions
-bool validateEquation(const string& input);
-stack<string> Tokenize(const string& input);
+bool validateEquation(const string& Equation);
+stack<string> Tokenize(const string& Equation);
 stack<string> shuntingYard(stack<string> TokenStack);
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double& Result);
 #endif

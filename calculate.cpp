@@ -130,6 +130,7 @@ bool isFunction(const string& str) {
 
 @return:
 	-Returns true if the decimal point is valid. If invalid, error print and return false.
+	-i, expectOperator, and allowUnary are updated and returned via pass-by-reference.
 
 @notes:
 	-Aux function to validateEquation.
@@ -187,6 +188,7 @@ bool validateDecimalPoint(const string& Equation, size_t& i, const char& Token, 
 
 @return:
 	-Returns true if the operator is valid. If invalid, error print and return false.
+	-i, expectOperator, and allowUnary are updated and returned via pass-by-reference.
 
 @notes:
 	-Aux function to validateEquation.
@@ -248,37 +250,7 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 
 
 
-
-
 /*
-whats allowed:
-Before:
-	-an operator, another '(', or the start of the equation
-
-After:
-	-an operator, another ')', the end of the equation
-
-
-
-
-whats not allowed:
-Before open parenthesis: DONE
-	-prevent digits before '('
-		ex: 3(3+4) 
-	-prevent decimal point before '(' (covererd by validateDecimalPoint)
-		ex:.(3+4)
-
-After close parenthesis: 
-	-prevent digits after ')'
-		ex:(3+4)3
-	-prevent '(' right after ')'
-		ex:(3+4)(3+4)
-	-prevent decimal point after ')'
-		ex:(3+4).
-	-prevent function right after ')' (covered in validateFunction)
-		ex:(3+4)sin(30)
-
-
 @purpose:
 	-Ensures proper usage and balancing of parentheses.
 
@@ -292,9 +264,10 @@ After close parenthesis:
 
 @return:
 	-Returns true if the parenthesis are valid. If invalid, error print and return false.
+	-i, expectOperator, Parentheses, and allowUnary are updated and returned via pass-by-reference.
 
 @notes:
-
+	-Prevents juxtaposition multiplication.
 */
 bool validateParentheses(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
 {
@@ -326,6 +299,7 @@ bool validateParentheses(const string& Equation, size_t& i, const char& Token, b
 			return false; // Invalid if no matching '(' or unexpected ')'
 		}
 
+
 		//Prevent a number, decimal point, or '(' from following a ')'.
 		else if (i + 1 < Equation.length() && (isdigit(Equation[i + 1]) || Equation[i + 1] == '.' || Equation[i + 1] == '('))
 		{
@@ -345,11 +319,6 @@ bool validateParentheses(const string& Equation, size_t& i, const char& Token, b
 
 
 
-
-
-
-
-
 /*
 @purpose:
 	-Ensures proper usage of Euler's number 'e'.
@@ -362,6 +331,7 @@ bool validateParentheses(const string& Equation, size_t& i, const char& Token, b
 
 @return:
 	-Returns true if Eulers number is valid. If invalid, error print and return false.
+	-i, expectOperator, and allowUnary are updated and returned via pass-by-reference.
 
 @notes:
 	-Aux function to validateEquation.
@@ -471,7 +441,7 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 	-Validates user input to make sure all operators are used correctly and parentheses are balanced.
 
 @param:
-	-string &input: User equation input.
+	-string &Equation: User equation input.
 
 @return:
 	-Returns true if equation is valid, prints error message and returns false if equation is invalid.
@@ -489,33 +459,35 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 		each error and of what type BUT I want the user to know what exactly is invalid about their input.
 */
 
-bool validateEquation(const string& input) {
+bool validateEquation(const string& Equation) {
 	stack<char> Parentheses;  // Stack to track parentheses for balancing
+	char Token;
 	bool expectOperator = false;
 	bool allowUnary = true;
 	size_t i = 0;
 
-	if (input.empty())
+
+	if (Equation.empty())
 	{
-		cout << "Error: Empty input. Please try again." << endl;
+		cout << "Error: Empty Equation. Please try again." << endl;
 		return false;
 	}
 
 
-	//Prevents single operator inputs.
-	if (input.length() == 1 && isOperator(input[0]))
+	//Prevents single operator Equations.
+	if (Equation.length() == 1 && isOperator(Equation[0]))
 	{
 		cout << "Error: Single operator detected. Please try again." << endl;
 		return false;
 	}
 
 
-	while (i < input.length())
+	while (i < Equation.length())
 	{
-		char ch = input[i];
+		Token = Equation[i];
 
 		//Handle whitespace.
-		if (isspace(ch))
+		if (isspace(Token))
 		{
 			cout << "Error: Whitespace detected. Please try again." << endl;
 			return false;
@@ -523,71 +495,44 @@ bool validateEquation(const string& input) {
 		
 
 		//Handle decimal points.
-		else if (isdigit(ch) || ch == '.')
+		else if (isdigit(Token) || Token == '.')
 		{
-			if (!validateDecimalPoint(input, i, ch, expectOperator, allowUnary)) return false;
+			if (!validateDecimalPoint(Equation, i, Token, expectOperator, allowUnary)) return false;
 		}
 
 
 		//Handle operators
-		else if (isOperator(ch))
+		else if (isOperator(Token))
 		{
 			//If current token is '-' and we can expect an unary minus, increment to next token to ensure its a number.
-			if (ch == '-' && allowUnary)
+			if (Token == '-' && allowUnary)
 			{
 				i++;
 				continue;
 			}
 
-			if (!validateOperator(input, i, ch, expectOperator, allowUnary)) return false;
+			if (!validateOperator(Equation, i, Token, expectOperator, allowUnary)) return false;
 		}
 
 
 
-		else if (ch == '(' || ch == ')')
+		else if (Token == '(' || Token == ')')
 		{
-			if (!validateParentheses(input, i, ch, expectOperator, allowUnary, Parentheses)) return false;
+			if (!validateParentheses(Equation, i, Token, expectOperator, allowUnary, Parentheses)) return false;
 		}
-
-
-		/*
-		//Handle open parentheses
-		else if (ch == '(')
-		{
-			Parentheses.push(ch);
-			expectOperator = false; // After '(', we do not expect an operator but allow unary.
-			allowUnary = true;
-			i++;
-		}
-
-
-		//Handle close parentheses
-		else if (ch == ')')
-		{
-			if (Parentheses.empty() || !expectOperator)
-			{
-				cout << "Error: Unbalanced parentheses. Please try again." << endl;
-				return false; // Invalid if no matching '(' or unexpected ')'
-			}
-
-			Parentheses.pop();
-			expectOperator = true; // After ')', we expect an operator but not unary
-			allowUnary = false;
-			i++;
-		}*/
 
 
 		//Check for Euler's number 'e'.
-		else if (ch == 'e')
+		else if (Token == 'e')
 		{
-			if (!validateEuler(input, i, expectOperator, allowUnary)) return false;
+			if (!validateEuler(Equation, i, expectOperator, allowUnary)) return false;
 		}
 
 
 		//Handles trig functions. 
-		else if (isalpha(ch))
+		else if (isalpha(Token))
 		{
-			if (!validateFunctions(input, i, expectOperator, allowUnary, Parentheses)) return false;
+			if (!validateFunctions(Equation, i, expectOperator, allowUnary, Parentheses)) return false;
 		}
 
 
@@ -606,7 +551,7 @@ bool validateEquation(const string& input) {
 	}
 
 
-	return true;// Input is valid if all parentheses are balanced and we end expecting an operator
+	return true;// Equation is valid if all parentheses are balanced and we end expecting an operator
 }
 
 
