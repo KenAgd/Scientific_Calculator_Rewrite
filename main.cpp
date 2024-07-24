@@ -143,6 +143,7 @@ int main()
 	stack<string>postFixStack;
 	double Result = 0.0;
 	double RoundedResult = 0.0;
+	bool DebugMode = 0;//1 = test prints only, 0 = no prints
 	
 
 	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead"<< endl << "*Encapsulate exponents in parentheses. EX: 2^(1+2)" << endl << "*To exit, type 'exit' or 'quit'." << endl;
@@ -173,9 +174,9 @@ int main()
 		else
 		{
 			tokenizedStack = Tokenize(Equation);
-			testPrint(tokenizedStack);
+			if (DebugMode) testPrint(tokenizedStack);
 			postFixStack = shuntingYard(tokenizedStack);
-			testPrint(postFixStack);
+			if (DebugMode) testPrint(postFixStack);
 			evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
 			cout << "Result: "  << Result << endl;
 		}

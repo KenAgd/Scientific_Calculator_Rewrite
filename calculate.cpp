@@ -384,8 +384,9 @@ bool validateEuler(const string& Equation, size_t& i, bool& expectOperator, bool
 
 @notes:
 	-Aux function to validateEquation.
-	-Checks if the token is a valid trig function, for balanced parentheses, and for juxtiposition multiplication.
+	-Checks if the token is a valid trig function, for balanced parentheses, for juxtiposition multiplication, and for undefined/NaN behavior.
 	.sin(30) and sin(30). (or similar type inputs) are handled either by validateDecimalPoint or validateParentheses.
+	-After loading all letters of the trig function into the token, Equation[i] now sits at the '(' of the function.
 */
 bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, bool& allowUnary, stack<char>& Parentheses)
 {
@@ -415,6 +416,23 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 		{
 			cout << "Error: Invalid use of function. Please try again." << endl;
 			return false;
+		}
+
+
+		if (functionToken == "log" || functionToken == "ln")
+		{
+			if (i + 1 < Equation.length() && Equation[i + 1] == '0')
+			{
+				cout << "Error: Undefined Behavior (Logarithm of 0). Please try again." << endl;
+				return false;
+			}
+
+
+			if (i + 1 < Equation.length() && Equation[i + 1] < '0')
+			{
+				cout << "Error: Undefined Behavior (Logarithm of Negative Numbers). Please try again." << endl;
+				return false;
+			}
 		}
 
 
