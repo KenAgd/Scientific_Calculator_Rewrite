@@ -419,6 +419,7 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 		}
 
 
+		//Prevent Logarithm undefined/NaN behavior such as log/ln(0) and log/ln(negative number).
 		if (functionToken == "log" || functionToken == "ln")
 		{
 			if (i + 1 < Equation.length() && Equation[i + 1] == '0')
@@ -434,6 +435,15 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 				return false;
 			}
 		}
+
+
+		//Prevent Square Root undefined/NaN behavior sqrt(negative number).
+		if (functionToken == "sqrt" && (i + 1 < Equation.length() && Equation[i + 1] == '-'))
+		{
+			cout << "Error: Undefined Behavior (Square Root of Negative Number). Please try again." << endl;
+			return false;
+		}
+
 
 
 		Parentheses.push('(');//If completely valid, check for balanced parentheses and update expectOperator and allowUnary accordingly.
