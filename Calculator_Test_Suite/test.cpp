@@ -237,7 +237,7 @@ TEST(tokenizeTest, validInput)
 {
     stack<string>myStack;
 
-    myStack = createStack({ "-3.5", "+", "(", "-2.1", "*", "-4.2", ")", "/", "2" });
+    myStack = createStack({ "-", "3.5", "+", "(", "-","2.1", "*", "-", "4.2", ")", "/", "2" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("-3.5+(-2.1*-4.2)/2"));
 
     myStack = createStack({ "1", "+", "2", "*", "3" });
@@ -249,7 +249,7 @@ TEST(tokenizeTest, validInput)
 	myStack = createStack({ "(", "6.1", "+", "4.2", ")", "*", "3" });
 	EXPECT_EQ(ReverseStack(myStack), Tokenize("(6.1+4.2)*3"));
 
-	myStack = createStack({ "1", "-",  "-2" });
+	myStack = createStack({ "1", "-",  "-", "2" });
 	EXPECT_EQ(ReverseStack(myStack), Tokenize("1--2"));
 
 
@@ -271,7 +271,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "sqrt", "(", "16", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)"));
 
-    myStack = createStack({ "abs", "(", "-10", ")" });
+    myStack = createStack({ "abs", "(", "-","10", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10)"));
 
     // Trigonometric functions with nested functions
@@ -281,7 +281,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "tan", "(", "log", "(", "100", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(log(100))"));
 
-    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")" });
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-", "9", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))"));
 
     myStack = createStack({ "ln", "(", "sqrt", "(", "49", ")", ")" });
@@ -294,7 +294,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "tan", "(", "60", ")", "-", "log", "(", "10", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("tan(60)-log(10)"));
 
-    myStack = createStack({ "sqrt", "(", "16", ")", "*", "abs", "(", "-5", ")" });
+    myStack = createStack({ "sqrt", "(", "16", ")", "*", "abs", "(", "-", "5", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16)*abs(-5)"));
 
     myStack = createStack({ "ln", "(", "2.71828", ")", "/", "2" });
@@ -304,7 +304,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "sin", "(", "cos", "(", "30", ")", ")", "+", "tan", "(", "log", "(", "100", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sin(cos(30))+tan(log(100))"));
 
-    myStack = createStack({ "sqrt", "(", "abs", "(", "-9", ")", ")", "-", "ln", "(", "sqrt", "(", "49", ")", ")" });
+    myStack = createStack({ "sqrt", "(", "abs", "(", "-", "9", ")", ")", "-", "ln", "(", "sqrt", "(", "49", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(abs(-9))-ln(sqrt(49))"));
 
     // Trigonometric functions with complex arithmetic expressions
@@ -320,7 +320,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "sqrt", "(", "16", "-", "4", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(16-4)"));
 
-    myStack = createStack({ "abs", "(", "-10", "*", "2", ")" });
+    myStack = createStack({ "abs", "(", "-","10", "*", "2", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(-10*2)"));
 
     // Edge cases
@@ -342,7 +342,7 @@ TEST(tokenizeTest, validInput)
     myStack = createStack({ "sqrt", "(", "sqrt", "(", "16", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("sqrt(sqrt(16))"));
 
-    myStack = createStack({ "abs", "(", "abs", "(", "-10", ")", ")" });
+    myStack = createStack({ "abs", "(", "abs", "(", "-","10", ")", ")" });
     EXPECT_EQ(ReverseStack(myStack), Tokenize("abs(abs(-10))"));
 }
 

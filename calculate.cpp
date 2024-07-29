@@ -643,7 +643,7 @@ stack<string> Tokenize(const string& Equation)
 				Token += '0';
 			}
 
-			//Handles parsing the full function name and adding it to the stack.
+			//Handles parsing the full function name (such as sin or log) and adding it to the stack.
 			if (isalpha(Equation[i]))
 			{
 				while (i < Equation.length() && isalpha(Equation[i]))
@@ -677,48 +677,48 @@ stack<string> Tokenize(const string& Equation)
 		}
 
 		//Determine context of '-'. Is it unary or bianry minus.
-		else if (Equation[i] == '-')
-		{
-			//Check if it's a binary minus by checking if '-' follows a number, a closing parenthesis, or an 'e'.
-			if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == ')' || Equation[i - 1] == 'e'))
-			{
-				tokenStack.push("-");
-				i++;
-			}
-			else//Unary minus
-			{
-				Token = "-";
-				i++;
+		//else if (Equation[i] == '-')
+		//{
+		//	//Check if it's a binary minus by checking if '-' follows a number, a closing parenthesis, or an 'e'.
+		//	if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == ')' || Equation[i - 1] == 'e'))
+		//	{
+		//		tokenStack.push("-");
+		//		i++;
+		//	}
+		//	else//Unary minus
+		//	{
+		//		Token = "-";
+		//		i++;
 
-				//Handles negative numbers. Check if unary minus is followed by a number.
-				if (i < Equation.length() && isdigit(Equation[i]))
-				{
-					while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
-					{
-						Token += Equation[i];
-						i++;
-					}
-					tokenStack.push(Token);
-				}
+		//		//Handles negative numbers. Check if unary minus is followed by a number.
+		//		if (i < Equation.length() && isdigit(Equation[i]))
+		//		{
+		//			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+		//			{
+		//				Token += Equation[i];
+		//				i++;
+		//			}
+		//			tokenStack.push(Token);
+		//		}
 
-				//Handles negative functions. Check if unary minus is followed by a function.
-				else if (i < Equation.length() && isalpha(Equation[i]))
-				{
-					while (i < Equation.length() && isalpha(Equation[i]))
-					{
-						Token += Equation[i];
-						i++;
-					}
-					tokenStack.push(Token);
-				}
-				
-				
-				else//Standalone unary minus, such as in front of a parenthesis.
-				{
-					tokenStack.push("-");
-				}
-			}
-		}
+		//		//Handles negative functions. Check if unary minus is followed by a function.
+		//		else if (i < Equation.length() && isalpha(Equation[i]))
+		//		{
+		//			while (i < Equation.length() && isalpha(Equation[i]))
+		//			{
+		//				Token += Equation[i];
+		//				i++;
+		//			}
+		//			tokenStack.push(Token);
+		//		}
+		//		
+		//		
+		//		else//Standalone unary minus, such as in front of a parenthesis.
+		//		{
+		//			tokenStack.push("-");
+		//		}
+		//	}
+		//}
 
 		else//Other operators and parentheses
 		{
