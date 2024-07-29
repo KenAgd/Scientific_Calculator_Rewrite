@@ -348,7 +348,19 @@ TEST(tokenizeTest, validInput)
 
 
 
+/*
+@purpose:
+	-Converts a stack to a string.
+@param: 
+	-std::stack<std::string> s: The stack to be converted to a string.
+@returns:
+	-Returns a string with the elements in the stack.
+@notes:
+    -This is used for shunting yard and evalEquation testing since the input for those functions is a stack.
 
+
+    THIS MIGHT BE USELESS. NOT USED AS ALL
+*/
 string stackToString(std::stack<std::string> s) {
     std::ostringstream oss;
     while (!s.empty()) {
@@ -378,14 +390,15 @@ Format:
         stackToString had to be made since it returns a string, which is printable using cout.
     -*******The way EXPECT_EQ compares stacks is by popping and comparing top elements. Loading stacks using ({}) loads the stack from
         left to right, bottom to top. BASICALLY RIGHT SIDE OF ({}) STACK IS THE TOP.
+    -actualStack should be reversed of whats really the actual. This is just because thats how stacks are compared.
 */
 TEST(shuntingYardTest, validInput)
 {
     stack<string>expectedStack;
     stack<string>actualStack;
 
-	expectedStack = ReverseStack(createStack({ "-3.5", "+", "(", "-2.1", "*", "-4.2", ")", "/", "2" }));
-    actualStack = ReverseStack(createStack({"-3.5", "-2.1", "-4.2", "*", "2", "/", "+"}));
+	expectedStack = ReverseStack(createStack({"-", "3.5", "+", "(", "-","2.1", "*", "-","4.2", ")", "/", "2" }));
+    actualStack = ReverseStack(createStack({"3.5", "-", "2.1", "*", "-", "4.2", "-", "2", "/" , "+"}));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
     expectedStack = ReverseStack(createStack({ "7", "+", "8", "*", "9" }));
@@ -439,11 +452,6 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "-3.5", "+", "(", "-2.1", "*", "-4.2", ")", "/", "2" }));
-    actualStack = ReverseStack(createStack({ "-3.5", "-2.1", "-4.2", "*", "2", "/", "+" }));
-    EXPECT_EQ(shuntingYard(expectedStack), actualStack);
-
-
     expectedStack = ReverseStack(createStack({ "sin", "(", "2", "+", "3", ")" }));
     actualStack = ReverseStack(createStack({ "2", "3", "+", "sin" }));
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
@@ -474,8 +482,8 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", ")" }));
-    actualStack = createStack({ "abs", "-5" });
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-","5", ")" }));
+    actualStack = createStack({ "abs", "-", "5"});
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
@@ -489,8 +497,8 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "abs", "(", "-5", "-", "3", ")" }));
-    actualStack = createStack({ "abs", "-", "3", "-5" });
+    expectedStack = ReverseStack(createStack({ "abs", "(", "-", "5", "-", "3", ")" }));
+    actualStack = createStack({ "abs", "-", "3", "-","5" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
@@ -499,8 +507,8 @@ TEST(shuntingYardTest, validInput)
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 
 
-    expectedStack = ReverseStack(createStack({ "sqrt", "(", "abs", "(", "-5", "+", "3", ")", ")" }));
-    actualStack = createStack({ "sqrt", "abs", "+", "3", "-5" });
+    expectedStack = ReverseStack(createStack({ "sqrt", "(", "abs", "(", "-","5", "+", "3", ")", ")" }));
+    actualStack = createStack({ "sqrt", "abs", "+", "3", "-","5" });
     EXPECT_EQ(shuntingYard(expectedStack), actualStack);
 }
 

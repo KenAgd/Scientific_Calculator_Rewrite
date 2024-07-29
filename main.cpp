@@ -180,8 +180,8 @@ int main()
 		{
 			tokenizedStack = Tokenize(Equation);
 			if (DebugMode) testPrint(tokenizedStack);
-			//postFixStack = shuntingYard(tokenizedStack);
-			//if (DebugMode) testPrint(postFixStack);
+			postFixStack = shuntingYard(tokenizedStack);
+			if (DebugMode) testPrint(postFixStack);
 			//evaluateEquation(postFixStack, DegOrRad, Result);//Result is passed by reference (&). Meaning any changes made to Result in evaluateEquation will be reflected in the main function as well.
 			//cout << "Result: "  << Result << endl;
 		}

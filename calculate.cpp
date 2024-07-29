@@ -617,10 +617,11 @@ bool validateEquation(const string& Equation) {
 		EX: "Hello, World!" -> ["Hello", ",", "World", "!"]
 	-size_t used for i counter variable. Its apparently good practice to use size_t instead of int for counters.
 	-string() used to convert int to string. Its not like type casting in C, its a "constructor" where the first parameter determines how many times to repeat the second parameter.
+	-Unary and binary minus are treated the same in this function and the context will be determined later.
 
 @example:
 	-(3+4) -> ["-", "(", "3", "+", "4", ")"]
-	-.5+1 -> ["-0.5", "+", "1"]
+	-.5+1 -> ["-", "0.5", "+", "1"]
 	12.345, parse 345 and add it to 12. to form the full 12.345
 */
 stack<string> Tokenize(const string& Equation)
@@ -773,6 +774,7 @@ int Precedence(const string& Token)
 	-top = look at the top of the stack.
 	-pop = remove the top of the stack.
 	-push = add an element to the top of the stack.
+	-Unary minus isn't really supported in postfix notation. 
 
 @example:
 	-1+2*3 = 1 2 3 * +
@@ -789,12 +791,19 @@ stack<string> shuntingYard(stack<string> tokenStack)
 		tokenStack.pop();
 		
 
-		//If current token is a positive or negative operand (including Eulers number), push to postfix stack.
-		if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) || Token[0] == 'e' || (Token.length() > 1 && Token[0] == '-' && Token[1] == 'e'))
+		//If current token is a positive or negative operand (including Eulers number), push to postfix stack. OLD
+		//if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) || Token[0] == 'e' || (Token.length() > 1 && Token[0] == '-' && Token[1] == 'e'))
+		//{
+		//	postFixStack.push(Token);
+		//}
+		
+		
+		
+		//NEW If current token is a digit or e, push to postfix stack.
+		if (isdigit(Token[0]) ||  Token[0] == 'e')
 		{
 			postFixStack.push(Token);
 		}
-		
 
 		else if (isFunction(Token)) 
 		{
