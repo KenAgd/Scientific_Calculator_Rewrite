@@ -111,7 +111,7 @@ bool isOperator(char Token)
 		Both use hashing functions and both have the same time complexity (O(1)), unordered_set just saves me time and lines.
 */
 bool isFunction(const string& str) {
-	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs" };
+	static const unordered_set<string> functions = { "sin", "cos", "tan", "log", "ln", "sqrt", "abs", "-sin", "-cos", "-tan", "-log", "-ln", "-sqrt", "-abs" };
 	return functions.find(str) != functions.end();
 }
 
@@ -193,7 +193,7 @@ bool validateDecimalPoint(const string& Equation, size_t& i, const char& Token, 
 @notes:
 	-Aux function to validateEquation.
 	-Checks for multiple operators in a row, if an operator is preceded/followed by a number, if theres an operator at the beginning or end of the equation,
-		proper usage of modulo, and division by zero.
+		proper usage of modulo, undefined behavior/NaN, and division by zero.
 */
 bool validateOperator(const string& Equation, size_t& i, const char& Token, bool& expectOperator, bool& allowUnary)
 {
@@ -220,10 +220,9 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 		}
 
 
-		//Ensure proper usage of modulo.
+		//Ensure proper usage of modulo by checking that % has an integer in both operands.
 		if (Token == '%')
 		{
-			//Checks that % has an integer in both operands.
 			if (i == 0 || (!isdigit(Equation[i - 1]) && Equation[i - 1] != ')')
 				|| (i + 1 >= Equation.length()
 					|| (!isdigit(Equation[i + 1]) && Equation[i + 1] != '(')))
@@ -234,9 +233,24 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 		}
 
 
+		//Ensure proper usage of exponent by preventing 0^0 or 0^-1.
 		if (Token == '^')
 		{
-
+			//First check if incrementor is within the equation length memory bounds and then check for undefined behavior.
+			if (i + 1 < Equation.length() && i - 1 >= 0)
+			{
+				if (Equation[i - 1] == '0' && Equation[i + 1] == '0')
+				{
+					cout << "Error: Undefined behavior (0^0). Please try again." << endl;
+					return false;
+				}
+				
+				if (Equation[i - 1] == '0' && (Equation[i + 1] == '-' && Equation[i + 2] == '1'))
+				{
+					cout << "Error: Undefined behavior (0^-1). Please try again." << endl;
+					return false;
+				}
+			}
 		}
 
 
@@ -429,7 +443,7 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 			}
 
 
-			if (i + 1 < Equation.length() && Equation[i + 1] < '0')
+			if (i + 2 < Equation.length() && (Equation[i + 1] == '-' && (isdigit(Equation[i + 2] || Equation[i + 2] == 'e'))))
 			{
 				cout << "Error: Undefined Behavior (Logarithm of Negative Numbers). Please try again." << endl;
 				return false;
@@ -437,12 +451,16 @@ bool validateFunctions(const string& Equation, size_t& i, bool& expectOperator, 
 		}
 
 
-		//Prevent Square Root undefined/NaN behavior sqrt(negative number).
+		//Prevent Square Root undefined/NaN behavior such as sqrt(negative number).
 		if (functionToken == "sqrt" && (i + 1 < Equation.length() && Equation[i + 1] == '-'))
 		{
 			cout << "Error: Undefined Behavior (Square Root of Negative Number). Please try again." << endl;
 			return false;
 		}
+
+
+		//if (functionToken == "tan")
+
 
 
 
@@ -872,8 +890,21 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	else if (Token == "*") return Operand1 * Operand2;
 	else if (Token == "/") return Operand1 / Operand2;
 	else if (Token == "%") return fmod(Operand1, Operand2);
-	else if (Token == "^") return pow(Operand1, Operand2);
+	//else if (Token == "^") return pow(Operand1, Operand2);
+	else if (Token == "^")
+	{
+		if (Operand2 < 0)
+		{
+			return 1 / pow(Operand1, -Operand2);
+		}
+		return pow(Operand1, Operand2);
+	}
+	
+	
+	//potential fix to negative functions is to perform the positive calculation and then return the negative version. BUT
+		//this doesn't fix normal numbers. It would be more efficient to fix everything in one fell swoop then to fix each one individually.
 	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
+	else if (Token == "-sin") return -((DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1));
 	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
 	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
 	else if (Token == "log") return log10(Operand1);
@@ -907,7 +938,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 	double functionOperand = 0.0;
 	double Operand1 = 0.0;
 	double Operand2 = 0.0;
-	Result = 0.0;
+	Result = 0.0;//Zero out Result before perform next calculation just as a precaution.
 
 
 	//Start eval iterating through the post fix stack by first poping off the top of the stack.
@@ -923,20 +954,29 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		}
 
 
-		else if (Token[0] == 'e' ||  Token == "-e") Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);
-
+		//If Euler's number is detected, push its number equivalent to the eval stack and clear Token.
+		else if (Token[0] == 'e' || Token == "-e")
+		{
+			Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
+	
+		}
 
 		else if (isFunction(Token)) 
 		{
+
+
+
+
+
 			functionOperand = evalStack.top();
 			evalStack.pop();
 			Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
 			evalStack.push(Result);
 		}
 
-
+		
 		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
-		else
+		else//old
 		{
 			Operand2 = evalStack.top();
 			evalStack.pop();
@@ -946,6 +986,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 				evalStack.push(-Operand2); // Handle unary minus
 			}
 
+
 			else
 			{
 				Operand1 = evalStack.top(); 
@@ -954,6 +995,47 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 				evalStack.push(Result);
 			}
 		}
+
+
+
+
+		
+		////new
+		//else
+		//{
+		//	if (evalStack.empty())
+		//	{
+		//		// Handle unary minus for the first operand
+		//		Operand2 = 0;
+		//		Operand1 = 0;
+		//	}
+		//	else
+		//	{
+		//		Operand2 = evalStack.top();
+		//		evalStack.pop();
+
+		//		if (evalStack.empty() && Token == "-")
+		//		{
+		//			evalStack.push(-Operand2); // Handle unary minus
+		//			continue;
+		//		}
+
+		//		if (!evalStack.empty())
+		//		{
+		//			Operand1 = evalStack.top();
+		//			evalStack.pop();
+		//		}
+		//		else
+		//		{
+		//			Operand1 = 0; // For cases like "-2^3"
+		//		}
+		//	}
+
+		//	Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
+		//	evalStack.push(Result);
+		//}
+
+
 	}
 
 
@@ -965,4 +1047,5 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		ss >> Result;
 	}
 	else Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
+
 }

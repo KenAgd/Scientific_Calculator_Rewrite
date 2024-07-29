@@ -76,6 +76,11 @@
 		-Binary minus is referred to in Tokenize. Binary minus means normal subtraction while unary minus means negative number.
 		-OneNote flow charts dont include how to handle switching bewteen calculating in degrees or radians, converting to scientific notation, or eulers number. This are 
 			functionalities that I added on top of the project. The flow charts only cover the basic functionality of the calculator.
+
+
+
+		-new VS shortcut learned: ctrl + k then while still holding ctrl, ctrl + c to comment out highlighted lines. ctrl + k then ctrl + u to uncomment.
+			Any previous comments before ctrl + k + c will be retained, meaning that ctrl + k + u wont uncomment them.
 */
 #include <iostream>
 #include <string>
@@ -143,11 +148,11 @@ int main()
 	stack<string>postFixStack;
 	double Result = 0.0;
 	double RoundedResult = 0.0;
-	bool DebugMode = 0;//1 = test prints only, 0 = no prints
+	bool DebugMode = 1;//1 = test prints only, 0 = no prints
 	
 
 	cout << "Welcome to the Scientific Calculator. Please note:" << endl << "*Dont use spaces between numbers or operators." << endl << "*To switch between calculating in Radian or Degrees, type 'deg' or 'rad'. By default the calculator is set to radian mode." << endl << "*Log is in base 10" << endl << "*Dont use juxtaposition in the equation EX: 2(3) use 2*(3) instead"<< endl << "*Encapsulate exponents in parentheses. EX: 2^(1+2)" << endl << "*To exit, type 'exit' or 'quit'." << endl;
-	cout << "Allowed operators and functions: + - * / ^ % sin cos tan log ln sqrt abs" << endl;
+	cout << "Allowed operators and functions: + - * / ^ % e sin cos tan log ln sqrt abs" << endl;
 	while (true)
 	{
 		cout << endl <<"Enter an equation: ";
