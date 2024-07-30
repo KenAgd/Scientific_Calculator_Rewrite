@@ -910,8 +910,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	}
 	
 	
-	//potential fix to negative functions is to perform the positive calculation and then return the negative version. BUT
-		//this doesn't fix normal numbers. It would be more efficient to fix everything in one fell swoop then to fix each one individually.
+
 	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
 	else if (Token == "-sin") return -((DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1));
 	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
@@ -957,94 +956,118 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		postFixStack.pop();
 
 		//Check if current token is a number, negative number, or number with a decimal. If so, convert it to a double data type and push it to the eval stack.
-		if (isdigit(Token[0]) || Token[0] == '.' || (Token[0] == '-' && (isdigit(Token[1]) || Token[1] == '.')))
+		//if (isdigit(Token[0]) || Token[0] == '.' || (Token[0] == '-' && (isdigit(Token[1]) || Token[1] == '.')))
+		//{
+		//	evalStack.push(stod(Token));
+		//}
+
+		if (isdigit(Token[0]))
 		{
 			evalStack.push(stod(Token));
 		}
 
 
 		//If Euler's number is detected, push its number equivalent to the eval stack and clear Token.
-		else if (Token[0] == 'e' || Token == "-e")
+		//else if (Token[0] == 'e' || Token == "-e")
+		//{
+		//	Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
+		//}
+
+
+		else if (Token[0] == 'e')
 		{
-			Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
-	
+			evalStack.push(2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
 		}
 
+
+
+
+
+		//HERES WHERE MINUS CONTEXT NEEDS TO BE CHECKED BEFORE CALCULATING.
+		//If function is detected, perform the appropriate calculation and push the result to the eval stack. The operand of the function should already be on the eval stack.
 		else if (isFunction(Token)) 
 		{
-
-
-
-
-
 			functionOperand = evalStack.top();
 			evalStack.pop();
 			Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
 			evalStack.push(Result);
 		}
 
-		
-		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
-		else//old
+		else if (Token == "-")
 		{
-			Operand2 = evalStack.top();
-			evalStack.pop();
-
-			if (Token == "-" && evalStack.empty())
+			// Check if it's unary minus
+			if (evalStack.empty() ||
+				(postFixStack.size() > 0 &&
+					(isOperator(postFixStack.top()[0]) || isFunction(postFixStack.top()))))
 			{
-				evalStack.push(-Operand2); // Handle unary minus
+				// Unary minus
+				if (evalStack.empty())
+				{
+					throw runtime_error("Invalid expression: not enough operands for unary minus");
+				}
+				Operand1 = evalStack.top();
+				evalStack.pop();
+				evalStack.push(-Operand1);
 			}
-
-
 			else
 			{
-				Operand1 = evalStack.top(); 
+				// Binary minus
+				if (evalStack.size() < 2)
+				{
+					throw runtime_error("Invalid expression: not enough operands for binary minus");
+				}
+				Operand2 = evalStack.top();
+				evalStack.pop();
+				Operand1 = evalStack.top();
 				evalStack.pop();
 				Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
 				evalStack.push(Result);
 			}
 		}
+		else if (isOperator(Token[0])) // Other binary operators
+		{
+			if (evalStack.size() < 2)
+			{
+				throw runtime_error("Invalid expression: not enough operands");
+			}
+			Operand2 = evalStack.top();
+			evalStack.pop();
+			Operand1 = evalStack.top();
+			evalStack.pop();
+			Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
+			evalStack.push(Result);
+		}
+		else
+		{
+			throw runtime_error("Invalid token: " + Token);
+		}
+	
+
 
 
 
 
 		
-		////new
+		////Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
 		//else
 		//{
-		//	if (evalStack.empty())
-		//	{
-		//		// Handle unary minus for the first operand
-		//		Operand2 = 0;
-		//		Operand1 = 0;
-		//	}
-		//	else
-		//	{
-		//		Operand2 = evalStack.top();
+		//	Operand2 = evalStack.top();
+		//	evalStack.pop();
+
+		//	//if (Token == "-" && evalStack.empty())
+		//	//{
+		//	//	evalStack.push(-Operand2); // Handle unary minus
+		//	//}
+
+
+		//	//else
+		//	//{
+		//		Operand1 = evalStack.top(); 
 		//		evalStack.pop();
-
-		//		if (evalStack.empty() && Token == "-")
-		//		{
-		//			evalStack.push(-Operand2); // Handle unary minus
-		//			continue;
-		//		}
-
-		//		if (!evalStack.empty())
-		//		{
-		//			Operand1 = evalStack.top();
-		//			evalStack.pop();
-		//		}
-		//		else
-		//		{
-		//			Operand1 = 0; // For cases like "-2^3"
-		//		}
-		//	}
-
-		//	Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
-		//	evalStack.push(Result);
+		//		Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
+		//		evalStack.push(Result);
+		//	//}
 		//}
-
-
 	}
 
 
