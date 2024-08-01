@@ -239,15 +239,10 @@ bool validateOperator(const string& Equation, size_t& i, const char& Token, bool
 			//First check if incrementor is within the equation length memory bounds and then check for undefined behavior.
 			if (i + 1 < Equation.length() && i - 1 >= 0)
 			{
-				if (Equation[i - 1] == '0' && Equation[i + 1] == '0')
+				//Prevent equations where left operand is 0 and right operand is 0 or negative.
+				if (Equation[i - 1] == '0' && (Equation[i + 1] == '0' || Equation[i + 1] == '-'))
 				{
-					cout << "Error: Undefined behavior (0^0). Please try again." << endl;
-					return false;
-				}
-				
-				if (Equation[i - 1] == '0' && (Equation[i + 1] == '-' && Equation[i + 2] == '1'))
-				{
-					cout << "Error: Undefined behavior (0^-1). Please try again." << endl;
+					cout << "Error: Undefined behavior (0^0 or 0^negative exponent). Please try again." << endl;
 					return false;
 				}
 			}
@@ -995,47 +990,6 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 				evalStack.push(Result);
 			}
 		}
-
-
-
-
-		
-		////new
-		//else
-		//{
-		//	if (evalStack.empty())
-		//	{
-		//		// Handle unary minus for the first operand
-		//		Operand2 = 0;
-		//		Operand1 = 0;
-		//	}
-		//	else
-		//	{
-		//		Operand2 = evalStack.top();
-		//		evalStack.pop();
-
-		//		if (evalStack.empty() && Token == "-")
-		//		{
-		//			evalStack.push(-Operand2); // Handle unary minus
-		//			continue;
-		//		}
-
-		//		if (!evalStack.empty())
-		//		{
-		//			Operand1 = evalStack.top();
-		//			evalStack.pop();
-		//		}
-		//		else
-		//		{
-		//			Operand1 = 0; // For cases like "-2^3"
-		//		}
-		//	}
-
-		//	Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
-		//	evalStack.push(Result);
-		//}
-
-
 	}
 
 
