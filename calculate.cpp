@@ -887,44 +887,21 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	else if (Token == "*") return Operand1 * Operand2;
 	else if (Token == "/") return Operand1 / Operand2;
 	else if (Token == "%") return fmod(Operand1, Operand2);
-	//else if (Token == "^") return pow(Operand1, Operand2);
-	//else if (Token == "^")
-	//{
-	//	if (Operand2 < 0)
-	//	{
-	//		return 1 / pow(Operand1, -Operand2);
-	//	}
-	//	return pow(Operand1, Operand2);
-	//}
 	else if (Token == "^")
 	{
-		if (Operand1 < 0)
+		if (Operand2 < 0)
 		{
-			// For negative base
-			if (floor(Operand2) == Operand2)
-			{
-				// Integer exponent
-				result = pow(abs(Operand1), Operand2);
-				return (static_cast<int>(Operand2) % 2 == 0) ? result : -result;
-			}
-			else
-			{
-				// Fractional exponent
-				throw domain_error("Negative number cannot be raised to a fractional power.");
-			}
+			return 1 / pow(Operand1, -Operand2);
 		}
-		else
-		{
-			// For positive or zero base
-			return pow(Operand1, Operand2);
-		}
+		return pow(Operand1, Operand2);
 	}
+
 	
 
-	else if (Token == "sin" || Token == "-sin")
+	else if (Token == "sin" || Token == "~sin")
 	{
 		result = (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
-		return (Token[0] == '-') ? -result : result;
+		return (Token[0] == '~') ? -result : result;
 	}
 	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
 	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
@@ -976,7 +953,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 
 
 		//If Euler's number is detected, push its number equivalent to the eval stack and clear Token.
-		else if (Token[0] == 'e' || Token == "-e")
+		else if (Token[0] == 'e' || Token == "~e")
 		{
 			Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
 	
@@ -998,7 +975,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 			Operand2 = evalStack.top();
 			evalStack.pop();
 
-			if (Token == "-" && evalStack.empty())
+			if (Token == "~" && evalStack.empty())
 			{
 				evalStack.push(-Operand2); // Handle unary minus
 			}
