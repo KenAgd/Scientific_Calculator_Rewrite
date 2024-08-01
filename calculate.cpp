@@ -880,26 +880,52 @@ stack<string> shuntingYard(stack<string> tokenStack)
 */
 double performCalculation(const string& Token, double Operand1, double Operand2, bool DegOrRad)
 {
+	double result = 0.0;
+
 	if (Token == "+") return Operand1 + Operand2;
 	else if (Token == "-") return Operand1 - Operand2;
 	else if (Token == "*") return Operand1 * Operand2;
 	else if (Token == "/") return Operand1 / Operand2;
 	else if (Token == "%") return fmod(Operand1, Operand2);
 	//else if (Token == "^") return pow(Operand1, Operand2);
+	//else if (Token == "^")
+	//{
+	//	if (Operand2 < 0)
+	//	{
+	//		return 1 / pow(Operand1, -Operand2);
+	//	}
+	//	return pow(Operand1, Operand2);
+	//}
 	else if (Token == "^")
 	{
-		if (Operand2 < 0)
+		if (Operand1 < 0)
 		{
-			return 1 / pow(Operand1, -Operand2);
+			// For negative base
+			if (floor(Operand2) == Operand2)
+			{
+				// Integer exponent
+				result = pow(abs(Operand1), Operand2);
+				return (static_cast<int>(Operand2) % 2 == 0) ? result : -result;
+			}
+			else
+			{
+				// Fractional exponent
+				throw domain_error("Negative number cannot be raised to a fractional power.");
+			}
 		}
-		return pow(Operand1, Operand2);
+		else
+		{
+			// For positive or zero base
+			return pow(Operand1, Operand2);
+		}
 	}
 	
-	
-	//potential fix to negative functions is to perform the positive calculation and then return the negative version. BUT
-		//this doesn't fix normal numbers. It would be more efficient to fix everything in one fell swoop then to fix each one individually.
-	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
-	else if (Token == "-sin") return -((DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1));
+
+	else if (Token == "sin" || Token == "-sin")
+	{
+		result = (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
+		return (Token[0] == '-') ? -result : result;
+	}
 	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
 	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
 	else if (Token == "log") return log10(Operand1);
@@ -959,10 +985,6 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		else if (isFunction(Token)) 
 		{
 
-
-
-
-
 			functionOperand = evalStack.top();
 			evalStack.pop();
 			Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
@@ -971,7 +993,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 
 		
 		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
-		else//old
+		else
 		{
 			Operand2 = evalStack.top();
 			evalStack.pop();
@@ -992,7 +1014,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		}
 	}
 
-
+	cout << "Pre round and return result: " << evalStack.top() << endl;
 	
 	if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))//Convert to scientific notation if final result is larger than 10^10 or smaller than 10^-4.
 	{
