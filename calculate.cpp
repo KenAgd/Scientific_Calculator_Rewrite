@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <sstream> 
 #include <iomanip> 
+#include <cmath>
 #include "calculate.h"
 using namespace std;
 
@@ -678,48 +679,53 @@ stack<string> Tokenize(const string& Equation)
 		}
 
 		//Determine context of '-'. Is it unary or bianry minus.
-		//else if (Equation[i] == '-')
-		//{
-		//	//Check if it's a binary minus by checking if '-' follows a number, a closing parenthesis, or an 'e'.
-		//	if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == ')' || Equation[i - 1] == 'e'))
-		//	{
-		//		tokenStack.push("-");
-		//		i++;
-		//	}
-		//	else//Unary minus
-		//	{
-		//		Token = "-";
-		//		i++;
+		else if (Equation[i] == '-')
+		{
+			//Check if it's a binary minus by checking if '-' follows a number, a closing parenthesis, or an 'e'.
+			if (i > 0 && (isdigit(Equation[i - 1]) || Equation[i - 1] == ')' || Equation[i - 1] == 'e'))
+			{
+				tokenStack.push("-");
+				i++;
+			}
+			else//else it's a unary minus
+			{
+				Token = "~";
+				i++;
+				tokenStack.push(Token);
 
-		//		//Handles negative numbers. Check if unary minus is followed by a number.
-		//		if (i < Equation.length() && isdigit(Equation[i]))
-		//		{
-		//			while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
-		//			{
-		//				Token += Equation[i];
-		//				i++;
-		//			}
-		//			tokenStack.push(Token);
-		//		}
+				//Token = "-";
+				//i++;
 
-		//		//Handles negative functions. Check if unary minus is followed by a function.
-		//		else if (i < Equation.length() && isalpha(Equation[i]))
-		//		{
-		//			while (i < Equation.length() && isalpha(Equation[i]))
-		//			{
-		//				Token += Equation[i];
-		//				i++;
-		//			}
-		//			tokenStack.push(Token);
-		//		}
-		//		
-		//		
-		//		else//Standalone unary minus, such as in front of a parenthesis.
-		//		{
-		//			tokenStack.push("-");
-		//		}
-		//	}
-		//}
+				////Handles negative numbers. Check if unary minus is followed by a number.
+				//if (i < Equation.length() && isdigit(Equation[i]))
+				//{
+
+				//	while (i < Equation.length() && (isdigit(Equation[i]) || Equation[i] == '.'))
+				//	{
+				//		Token += Equation[i];
+				//		i++;
+				//	}
+				//	tokenStack.push(Token);
+				//}
+
+				////Handles negative functions. Check if unary minus is followed by a function.
+				//else if (i < Equation.length() && isalpha(Equation[i]))
+				//{
+				//	while (i < Equation.length() && isalpha(Equation[i]))
+				//	{
+				//		Token += Equation[i];
+				//		i++;
+				//	}
+				//	tokenStack.push(Token);
+				//}
+				//
+				//
+				//else//Standalone unary minus, such as in front of a parenthesis.
+				//{
+				//	tokenStack.push("-");
+				//}
+			}
+		}
 
 		else//Other operators and parentheses
 		{
@@ -752,6 +758,10 @@ int Precedence(const string& Token)
 	else if (Token == "*" || Token == "/" || Token == "%") return 2;
 
 	else if (Token == "^") return 3;
+
+	else if (Token == "~") return 4;
+
+	else if (isFunction(Token)) return 5;
 
 	else return 0;
 }
@@ -897,28 +907,97 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	if (Token == "+") return Operand1 + Operand2;
 	else if (Token == "-") return Operand1 - Operand2;
 	else if (Token == "*") return Operand1 * Operand2;
-	else if (Token == "/") return Operand1 / Operand2;
-	else if (Token == "%") return fmod(Operand1, Operand2);
-	//else if (Token == "^") return pow(Operand1, Operand2);
+	else if (Token == "/")
+	{
+		if (Operand2 == 0) throw runtime_error("Division by zero");
+		return Operand1 / Operand2;
+	}
+	else if (Token == "~") return -Operand1;
+	else if (Token == "%")
+	{
+		if (Operand2 == 0) throw runtime_error("Modulo by zero");
+		return fmod(Operand1, Operand2);
+	}
 	else if (Token == "^")
 	{
-		if (Operand2 < 0)
+		//if (Operand1 < 0 && floor(Operand2) != Operand2)
+		//{
+		//	throw runtime_error("Negative number cannot be raised to a fractional power");
+		//}
+		//Used to properly handle exponents of negative numbers
+		if (Operand1 < 0)
 		{
-			return 1 / pow(Operand1, -Operand2);
+			
+			double temp = abs(Operand1);
+			temp = pow(temp, Operand2);
+			return -temp;
+
+
+			/*
+			later implement:
+			temp = abs(Operand1);
+			return -pow(temp, Operand2);
+			
+			*/
 		}
+
 		return pow(Operand1, Operand2);
 	}
-	
-	
-
-	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
-	else if (Token == "-sin") return -((DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1));
-	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
-	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
-	else if (Token == "log") return log10(Operand1);
-	else if (Token == "ln") return log(Operand1);
-	else if (Token == "sqrt") return sqrt(Operand1);
+	else if (Token == "sin") return (DegOrRad == 1) ? sin(Operand1 * (atan(1.0) * 4) / 180) : sin(Operand1);
+	else if (Token == "cos") return (DegOrRad == 1) ? cos(Operand1 * (atan(1.0) * 4) / 180) : cos(Operand1);
+	else if (Token == "tan")
+	{
+		if (DegOrRad == 1 && fmod(Operand1, 90) == 0 && fmod(Operand1, 180) != 0)
+			throw runtime_error("Tangent is undefined for 90 and 270 degrees");
+		return (DegOrRad == 1) ? tan(Operand1 * (atan(1.0) * 4) / 180) : tan(Operand1);
+	}
+	else if (Token == "log")
+	{
+		if (Operand1 <= 0) throw runtime_error("Logarithm of non-positive number");
+		return log10(Operand1);
+	}
+	else if (Token == "ln")
+	{
+		if (Operand1 <= 0) throw runtime_error("Natural logarithm of non-positive number");
+		return log(Operand1);
+	}
+	else if (Token == "sqrt")
+	{
+		if (Operand1 < 0) throw runtime_error("Square root of negative number");
+		return sqrt(Operand1);
+	}
 	else if (Token == "abs") return fabs(Operand1);
+
+	throw runtime_error("Unknown operator or function: " + Token);
+
+
+
+
+//	if (Token == "+") return Operand1 + Operand2;
+//	else if (Token == "-") return Operand1 - Operand2;
+//	else if (Token == "*") return Operand1 * Operand2;
+//	else if (Token == "/") return Operand1 / Operand2;
+//	else if (Token == "%") return fmod(Operand1, Operand2);
+//	//else if (Token == "^") return pow(Operand1, Operand2);
+//	else if (Token == "^")
+//	{
+//		if (Operand2 < 0)
+//		{
+//			return 1 / pow(Operand1, -Operand2);
+//		}
+//		return pow(Operand1, Operand2);
+//	}
+//	
+//	
+//
+//	else if (Token == "sin") return (DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1);
+////	else if (Token == "-sin") return -((DegOrRad == 1) ? (sin(Operand1 * (3.14159 / 180))) : sin(Operand1));
+//	else if (Token == "cos") return (DegOrRad == 1) ? (cos(Operand1 * (3.14159 / 180))) : cos(Operand1);
+//	else if (Token == "tan") return (DegOrRad == 1) ? (tan(Operand1 * (3.14159 / 180))) : tan(Operand1);
+//	else if (Token == "log") return log10(Operand1);
+//	else if (Token == "ln") return log(Operand1);
+//	else if (Token == "sqrt") return sqrt(Operand1);
+//	else if (Token == "abs") return fabs(Operand1);
 	return 0.0;
 }
 
@@ -941,6 +1020,87 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 */
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 {
+	stack<double> evalStack;
+	string Token;
+
+	while (!postFixStack.empty())
+	{
+		Token = postFixStack.top();
+		postFixStack.pop();
+
+		if (Token == "e")
+		{
+			evalStack.push(2.71828);
+		}
+		else if (isdigit(Token[0]) || Token[0] == '.')
+		{
+			evalStack.push(stod(Token));
+		}
+		else if (Token == "~")
+		{
+			if (!evalStack.empty())
+			{
+				double top = evalStack.top();
+				evalStack.pop();
+				evalStack.push(-top);
+			}
+		}
+		else if (Token.length() == 1 && isOperator(Token[0]))
+		{
+			if (evalStack.size() >= 2)
+			{
+				double operand2 = evalStack.top();
+				evalStack.pop();
+				double operand1 = evalStack.top();
+				evalStack.pop();
+				evalStack.push(performCalculation(Token, operand1, operand2, DegOrRad));
+			}
+		}
+		else if (isFunction(Token))
+		{
+			if (!evalStack.empty())
+			{
+				/*
+				* stack<string> tempStack;
+				* if evalStack.top() == '~'
+				*	tempStack.push(~);
+				*	
+				*	
+				*	
+				* 
+				* 
+				* 
+				*/
+
+				double operand = evalStack.top();
+				evalStack.pop();
+				evalStack.push(performCalculation(Token, operand, 0, DegOrRad));
+			}
+		}
+	}
+
+	if (!evalStack.empty())
+	{
+		Result = evalStack.top();
+		// Rounding and scientific notation conversion
+		if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))
+		{
+			stringstream ss;
+			ss << scientific << setprecision(3) << Result;
+			ss >> Result;
+		}
+		else
+		{
+			Result = round(Result * 1000) / 1000;  // Round to 3 decimal places
+		}
+	}
+	else
+	{
+		Result = NAN;
+	}
+
+
+/*my version
 	stack<double> evalStack;
 	string Token;
 	double functionOperand = 0.0;
@@ -980,94 +1140,57 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		}
 
 
-
+		else if (Token == "~")  // Unary minus
+		{
+			if (!evalStack.empty())
+			{
+				double top = evalStack.top();
+				evalStack.pop();
+				evalStack.push(-top);
+			}
+		}
 
 
 		//HERES WHERE MINUS CONTEXT NEEDS TO BE CHECKED BEFORE CALCULATING.
 		//If function is detected, perform the appropriate calculation and push the result to the eval stack. The operand of the function should already be on the eval stack.
 		else if (isFunction(Token)) 
 		{
-			functionOperand = evalStack.top();
-			evalStack.pop();
-			Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
-			evalStack.push(Result);
+			//functionOperand = evalStack.top();
+			//evalStack.pop();
+			//Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
+			//evalStack.push(Result);
+
+			if (!evalStack.empty())
+			{
+				double operand = evalStack.top();
+				evalStack.pop();
+				evalStack.push(performCalculation(Token, operand, 0, DegOrRad));
+			}
 		}
 
-		else if (Token == "-")
+
+
+		
+		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
+		else
 		{
-			// Check if it's unary minus
-			if (evalStack.empty() ||
-				(postFixStack.size() > 0 &&
-					(isOperator(postFixStack.top()[0]) || isFunction(postFixStack.top()))))
+			Operand2 = evalStack.top();
+			evalStack.pop();
+
+			if (Token == "-" && evalStack.empty())
 			{
-				// Unary minus
-				if (evalStack.empty())
-				{
-					throw runtime_error("Invalid expression: not enough operands for unary minus");
-				}
-				Operand1 = evalStack.top();
-				evalStack.pop();
-				evalStack.push(-Operand1);
+				evalStack.push(-Operand2); // Handle unary minus
 			}
+
+
 			else
 			{
-				// Binary minus
-				if (evalStack.size() < 2)
-				{
-					throw runtime_error("Invalid expression: not enough operands for binary minus");
-				}
-				Operand2 = evalStack.top();
-				evalStack.pop();
-				Operand1 = evalStack.top();
+				Operand1 = evalStack.top(); 
 				evalStack.pop();
 				Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
 				evalStack.push(Result);
 			}
 		}
-		else if (isOperator(Token[0])) // Other binary operators
-		{
-			if (evalStack.size() < 2)
-			{
-				throw runtime_error("Invalid expression: not enough operands");
-			}
-			Operand2 = evalStack.top();
-			evalStack.pop();
-			Operand1 = evalStack.top();
-			evalStack.pop();
-			Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
-			evalStack.push(Result);
-		}
-		else
-		{
-			throw runtime_error("Invalid token: " + Token);
-		}
-	
-
-
-
-
-
-		
-		////Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
-		//else
-		//{
-		//	Operand2 = evalStack.top();
-		//	evalStack.pop();
-
-		//	//if (Token == "-" && evalStack.empty())
-		//	//{
-		//	//	evalStack.push(-Operand2); // Handle unary minus
-		//	//}
-
-
-		//	//else
-		//	//{
-		//		Operand1 = evalStack.top(); 
-		//		evalStack.pop();
-		//		Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
-		//		evalStack.push(Result);
-		//	//}
-		//}
 	}
 
 
@@ -1079,5 +1202,8 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		ss >> Result;
 	}
 	else Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
+	*/
+
+
 
 }

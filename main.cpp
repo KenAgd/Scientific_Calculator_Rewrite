@@ -81,6 +81,13 @@
 
 		-new VS shortcut learned: ctrl + k then while still holding ctrl, ctrl + c to comment out highlighted lines. ctrl + k then ctrl + u to uncomment.
 			Any previous comments before ctrl + k + c will be retained, meaning that ctrl + k + u wont uncomment them.
+
+
+
+		-Upon further reflection and research, it seems that a deque would've been a more efficient data structure than a stack since its essentially a doubly linked list.
+			It shares the same time and space complexity of a stack with all time complexity matching with O(1) and space complexity of O(n). It also has the added benefit
+			of its memory being automatically handled and freed at the end of all function calls BUT it might also take up a little more memory than a stack when each element is a small
+			variable or object.
 */
 #include <iostream>
 #include <string>
