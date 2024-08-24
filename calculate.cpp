@@ -757,9 +757,9 @@ int Precedence(const string& Token)
 
 	else if (Token == "*" || Token == "/" || Token == "%") return 2;
 
-	else if (Token == "^") return 3;
+	else if (Token == "^") return 4;
 
-	else if (Token == "~") return 4;
+	else if (Token == "~") return 3;
 
 	else if (isFunction(Token)) return 5;
 
@@ -799,13 +799,6 @@ stack<string> shuntingYard(stack<string> tokenStack)
 	{
 		Token = tokenStack.top();
 		tokenStack.pop();
-		
-
-		//If current token is a positive or negative operand (including Eulers number), push to postfix stack. OLD
-		//if (isdigit(Token[0]) || (Token.length() > 1 && Token[0] == '-' && isdigit(Token[1])) || Token[0] == 'e' || (Token.length() > 1 && Token[0] == '-' && Token[1] == 'e'))
-		//{
-		//	postFixStack.push(Token);
-		//}
 		
 		
 		
@@ -877,6 +870,23 @@ stack<string> shuntingYard(stack<string> tokenStack)
 
 
 
+
+stack<string>addToBottomStack(stack<string>&originalStack, string Token)
+{
+	stack<string> Temp;
+	Temp.push(Token);
+
+	while (!originalStack.empty()) {
+		Temp.push(originalStack.top());
+		originalStack.pop();
+	}
+
+	return Temp;
+}
+
+
+
+
 /*
 @purpose:
 	-Performs calculations:
@@ -920,11 +930,6 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 	}
 	else if (Token == "^")
 	{
-		//if (Operand1 < 0 && floor(Operand2) != Operand2)
-		//{
-		//	throw runtime_error("Negative number cannot be raised to a fractional power");
-		//}
-		//Used to properly handle exponents of negative numbers
 		if (Operand1 < 0)
 		{
 			
@@ -935,7 +940,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 
 			/*
 			later implement:
-			temp = abs(Operand1);
+			double temp = abs(Operand1);
 			return -pow(temp, Operand2);
 			
 			*/
@@ -1020,6 +1025,7 @@ double performCalculation(const string& Token, double Operand1, double Operand2,
 */
 void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 {
+
 	stack<double> evalStack;
 	string Token;
 
@@ -1036,6 +1042,24 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		{
 			evalStack.push(stod(Token));
 		}
+		
+		
+		else if (isFunction(Token))
+		{
+			if (!evalStack.empty())
+			{
+
+
+				double operand = evalStack.top();
+				evalStack.pop();
+				evalStack.push(performCalculation(Token, operand, 0, DegOrRad));
+				//Above line can be changed to evalStack.push(performCalculation(Token, evalStack.top(), 0, DegOrRad)); and comment that the evalStack.top 
+				//is the operand of the function.
+			}
+		}
+
+
+		
 		else if (Token == "~")
 		{
 			if (!evalStack.empty())
@@ -1043,6 +1067,7 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 				double top = evalStack.top();
 				evalStack.pop();
 				evalStack.push(-top);
+				//Above line can be changed to evalStack.push(-evalStack.top()); BUT maybe evalStack.pop() afterwards. Not 100% sure
 			}
 		}
 		else if (Token.length() == 1 && isOperator(Token[0]))
@@ -1056,28 +1081,15 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 				evalStack.push(performCalculation(Token, operand1, operand2, DegOrRad));
 			}
 		}
-		else if (isFunction(Token))
-		{
-			if (!evalStack.empty())
-			{
-				/*
-				* stack<string> tempStack;
-				* if evalStack.top() == '~'
-				*	tempStack.push(~);
-				*	
-				*	
-				*	
-				* 
-				* 
-				* 
-				*/
 
-				double operand = evalStack.top();
-				evalStack.pop();
-				evalStack.push(performCalculation(Token, operand, 0, DegOrRad));
-			}
-		}
+
+
+
+
+
+
 	}
+
 
 	if (!evalStack.empty())
 	{
@@ -1099,110 +1111,6 @@ void evaluateEquation(stack<string> postFixStack, bool DegOrRad, double &Result)
 		Result = NAN;
 	}
 
-
-/*my version
-	stack<double> evalStack;
-	string Token;
-	double functionOperand = 0.0;
-	double Operand1 = 0.0;
-	double Operand2 = 0.0;
-	Result = 0.0;//Zero out Result before perform next calculation just as a precaution.
-
-
-	//Start eval iterating through the post fix stack by first poping off the top of the stack.
-	while (!postFixStack.empty())
-	{
-		Token = postFixStack.top();
-		postFixStack.pop();
-
-		//Check if current token is a number, negative number, or number with a decimal. If so, convert it to a double data type and push it to the eval stack.
-		//if (isdigit(Token[0]) || Token[0] == '.' || (Token[0] == '-' && (isdigit(Token[1]) || Token[1] == '.')))
-		//{
-		//	evalStack.push(stod(Token));
-		//}
-
-		if (isdigit(Token[0]))
-		{
-			evalStack.push(stod(Token));
-		}
-
-
-		//If Euler's number is detected, push its number equivalent to the eval stack and clear Token.
-		//else if (Token[0] == 'e' || Token == "-e")
-		//{
-		//	Token[0] == 'e' ? evalStack.push(2.71828) : evalStack.push(-2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
-		//}
-
-
-		else if (Token[0] == 'e')
-		{
-			evalStack.push(2.71828);//Only 'e' and '-e' will trigger this. If 'e' not detected, assume its '-e' and push -2.71828.
-		}
-
-
-		else if (Token == "~")  // Unary minus
-		{
-			if (!evalStack.empty())
-			{
-				double top = evalStack.top();
-				evalStack.pop();
-				evalStack.push(-top);
-			}
-		}
-
-
-		//HERES WHERE MINUS CONTEXT NEEDS TO BE CHECKED BEFORE CALCULATING.
-		//If function is detected, perform the appropriate calculation and push the result to the eval stack. The operand of the function should already be on the eval stack.
-		else if (isFunction(Token)) 
-		{
-			//functionOperand = evalStack.top();
-			//evalStack.pop();
-			//Result = performCalculation(Token, functionOperand, NULL, DegOrRad);
-			//evalStack.push(Result);
-
-			if (!evalStack.empty())
-			{
-				double operand = evalStack.top();
-				evalStack.pop();
-				evalStack.push(performCalculation(Token, operand, 0, DegOrRad));
-			}
-		}
-
-
-
-		
-		//Pop the top of the stack twice to load the operands. If the current token is a "-" and the eval stack is empty, it is unary minus and push as such. Otherwise, perform the operation and push the result to the eval stack.
-		else
-		{
-			Operand2 = evalStack.top();
-			evalStack.pop();
-
-			if (Token == "-" && evalStack.empty())
-			{
-				evalStack.push(-Operand2); // Handle unary minus
-			}
-
-
-			else
-			{
-				Operand1 = evalStack.top(); 
-				evalStack.pop();
-				Result = performCalculation(Token, Operand1, Operand2, DegOrRad);
-				evalStack.push(Result);
-			}
-		}
-	}
-
-
-	
-	if (abs(Result) > 1e10 || (abs(Result) < 1e-4 && Result != 0.0))//Convert to scientific notation if final result is larger than 10^10 or smaller than 10^-4.
-	{
-		stringstream ss;
-		ss << scientific << setprecision(3) << evalStack.top();
-		ss >> Result;
-	}
-	else Result = round(evalStack.top() * 1000) / 1000;//round to 3 decimal places.
-	*/
 
 
 
