@@ -752,6 +752,8 @@ int Precedence(const string& Token)
 
 	else if (Token == "^") return 3;
 
+	else if (isFunction(Token)) return 4;
+
 	else return 0;
 }
 
